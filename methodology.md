@@ -30,7 +30,7 @@
 
 ## 更新频率
 
-GitHub Actions 每日北京时间 09:00 自动采集一次，数据追加写入 `data/prices.jsonl`，图表自动重绘。
+GitHub Actions 每日北京时间 11:00 自动采集一次（午餐时段，保证篮子单品在售），数据追加写入 `data/prices.jsonl`，图表自动重绘。
 
 ## 局限性（先说清楚）
 
