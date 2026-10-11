@@ -82,6 +82,36 @@ def load_cities():
     return snap if cities else None
 
 
+def load_prev_cities(today):
+    """上一个交易日的多城市快照, 用来写"和昨天比"."""
+    d = os.path.join(DATA, "cities")
+    if not os.path.isdir(d):
+        return None
+    files = sorted(f for f in os.listdir(d) if f.endswith(".json") and f[:-5] < today)
+    if not files:
+        return None
+    return json.load(open(os.path.join(d, files[-1]), encoding="utf-8"))
+
+
+def day_changes(snap, prev):
+    """返回 [(城市, 昨天价, 今天价)] 中有变化的城市."""
+    if not snap or not prev:
+        return []
+    old = {c["city"]: c.get("total") for c in prev.get("cities", [])}
+    out = []
+    for c in snap["cities"]:
+        o = old.get(c["city"])
+        if isinstance(o, (int, float)) and abs(o - c["total"]) >= 0.01:
+            out.append((c["city"], o, c["total"]))
+    return out
+
+
+def gap_pct(snap):
+    cities = snap["cities"]
+    hi, lo = cities[0]["total"], cities[-1]["total"]
+    return (hi - lo) / lo * 100
+
+
 def to_index(rows):
     if not rows:
         return []
@@ -232,6 +262,32 @@ def replace_block(text, name, block):
     return text
 
 
+def hook_block(snap, prev):
+    cities = snap["cities"]
+    hi, lo = cities[0], cities[-1]
+    lo_names = "、".join(short_city(c["city"]) for c in cities if c["total"] == lo["total"])
+    ch = day_changes(snap, prev)
+    if prev is None:
+        delta = "今天是第一天采样，之后每天自动更新。"
+    elif not ch:
+        delta = f"和上次（{prev['date']}）比，{len(cities)} 座城市价格都没变。"
+    else:
+        delta = "和上次比：" + "，".join(
+            f"{short_city(c)} {'涨' if n > o else '降'} ¥{abs(n - o):.1f}" for c, o, n in ch) + "。"
+    allst = [(c["city"], st) for c in cities for st in (c.get("stores") or [])]
+    if len(allst) > len(cities):
+        shi = max(allst, key=lambda t: t[1]["total"]); slo = min(allst, key=lambda t: t[1]["total"])
+        sgap = (shi[1]["total"] - slo[1]["total"]) / slo[1]["total"] * 100
+        head = (f"> ### 同一份巨无霸三件套，最贵的店 ¥{shi[1]['total']:.1f}，最便宜的 ¥{slo[1]['total']:.1f}，差 {sgap:.1f}%。\n>\n"
+                f"> 按城市中位数：{short_city(hi['city'])} ¥{hi['total']:.1f}，{lo_names} ¥{lo['total']:.1f}，城市间差 {gap_pct(snap):.1f}%。\n>\n")
+    else:
+        head = (f"> ### 同一份巨无霸三件套，{short_city(hi['city'])}比{lo_names}贵 ¥{hi['total'] - lo['total']:.1f}，"
+                f"城市间最多差 {gap_pct(snap):.1f}%。\n>\n")
+    return (head +
+            f"> {snap['date']} 麦当劳官方 MCP 实测 · {delta}\n>\n"
+            "> 👉 **[打开在线看板](https://ttnan.github.io/mcd-bigmac-index/)** · 觉得有意思就点个 ⭐ Star，数据每天自动更新。")
+
+
 def index_block(series, snap):
     date, val = series[-1]
     base_date = series[0][0]
@@ -245,21 +301,28 @@ def index_block(series, snap):
 
 def cities_block(snap):
     cities = snap["cities"]
+    multi = any(len(c.get("stores") or []) > 1 for c in cities)
     lines = [f"## 🗺️ 城市价格榜（{snap['date']}）", "",
-             "同一份「巨无霸 + 中薯条 + 中可乐」，在不同城市核心商圈门店的**到手价**：", "",
+             "同一份「巨无霸 + 中薯条 + 中可乐」，在各城市核心商圈的**到手价**"
+             + ("（每城同商圈多家门店取中位数）" if multi else "") + "：", "",
              "![城市价格榜](assets/cities.svg)", "",
-             "| # | 城市 | 采样门店 | 三件套单点到手价 | 巨无霸套餐 | 买套餐省 |",
-             "| --- | --- | --- | --- | --- | --- |"]
+             "| # | 城市 | 三件套到手价 | 各店价格 | 巨无霸三件套套餐 | 买套餐省 | 采样门店 |",
+             "| --- | --- | --- | --- | --- | --- | --- |"]
     for i, c in enumerate(cities):
         combo = c.get("combo") or {}
         cp = f'¥{combo["menuPrice"]:.1f}' if combo.get("menuPrice") else "—"
         sv = combo_saving(c)
-        lines.append(f'| {i+1} | {short_city(c["city"])} | {c["store"].replace("麦当劳", "")} | '
-                     f'¥{c["total"]:.1f} | {cp} | {f"{sv:.0f}%" if sv is not None else "—"} |')
+        sts = c.get("stores") or [{"store": c["store"], "total": c["total"]}]
+        tots = [st["total"] for st in sts]
+        rng = f"¥{min(tots):.1f}" if min(tots) == max(tots) else f"¥{min(tots):.1f}–{max(tots):.1f}"
+        names = "、".join(st["store"].replace("麦当劳", "").replace(short_city(c["city"]), "", 1) for st in sts)
+        lines.append(f'| {i+1} | {short_city(c["city"])} | **¥{c["total"]:.1f}** | {rng} | {cp} | '
+                     f'{f"{sv:.0f}%" if sv is not None else "—"} | {names} |')
     hi, lo = cities[0], cities[-1]
-    gap = (hi["total"] - lo["total"]) / lo["total"] * 100
+    lo_names = "、".join(short_city(c["city"]) for c in cities if c["total"] == lo["total"])
     lines += ["", f"> 今天最贵的是 **{short_city(hi['city'])}**（¥{hi['total']:.1f}），"
-              f"最便宜的是 **{short_city(lo['city'])}**（¥{lo['total']:.1f}），相差 {gap:.1f}%。"]
+              f"最便宜的是 **{lo_names}**（¥{lo['total']:.1f}），相差 {gap_pct(snap):.1f}%。"
+              "核心商圈价，不代表全城平均。"]
     return "\n".join(lines)
 
 
@@ -293,6 +356,24 @@ def write_site_data(rows, series, snap):
                 img = local_image(combo.get("productCode"), combo.get("image"))
                 combo["localImage"] = img[len("docs/"):] if img else None
         out["snapshot"] = snap
+        prev = load_prev_cities(snap["date"])
+        out["prev"] = ({"date": prev["date"],
+                        "totals": {c["city"]: c.get("total") for c in prev.get("cities", [])}}
+                       if prev else None)
+    hist = []
+    d = os.path.join(DATA, "cities")
+    if os.path.isdir(d):
+        for fn in sorted(os.listdir(d)):
+            if not fn.endswith(".json"):
+                continue
+            cs = [c for c in json.load(open(os.path.join(d, fn), encoding="utf-8")).get("cities", [])
+                  if isinstance(c.get("total"), (int, float))]
+            if len(cs) >= 2:
+                hi = max(cs, key=lambda c: c["total"]); lo = min(cs, key=lambda c: c["total"])
+                hist.append({"date": fn[:-5], "hi": hi["total"], "lo": lo["total"],
+                             "hiCity": hi["city"], "loCity": lo["city"],
+                             "gap": round((hi["total"] - lo["total"]) / lo["total"] * 100, 1)})
+    out["gapHistory"] = hist
     with open(os.path.join(DOCS, "data.json"), "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
 
@@ -317,6 +398,7 @@ def main():
     if series:
         text = replace_block(text, "INDEX", index_block(series, snap))
     if snap:
+        text = replace_block(text, "HOOK", hook_block(snap, load_prev_cities(snap["date"])))
         text = replace_block(text, "CITIES", cities_block(snap))
         text = replace_block(text, "BASKET", basket_block(snap))
     open(path, "w", encoding="utf-8").write(text)

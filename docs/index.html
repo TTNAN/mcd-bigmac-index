@@ -3,71 +3,104 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>巨无霸指数 · 同一个巨无霸，每座城市一个价</title>
-<meta name="description" content="每天通过麦当劳官方 MCP 采集 10 座城市巨无霸三件套的真实到手价：城市价格榜、套餐省多少、价格走势。">
+<title>巨无霸指数 · 同一份巨无霸，每家店一个价</title>
+<meta name="description" content="每天通过麦当劳官方 MCP 采集 10 座城市 30 家门店巨无霸三件套的真实到手价：城市价格榜、店间价差、套餐省多少。">
 <style>
-:root{--red:#da291c;--yellow:#ffbc0d;--ink:#1d1d1f;--muted:#6e6e73;--bg:#fff8ec;--card:#fff;--line:#f0e3cc;--green:#1a9e54}
+:root{--red:#da291c;--deep:#a51d13;--yellow:#ffbc0d;--ink:#1d1d1f;--muted:#6e6e73;--bg:#fff8ec;--card:#fff;--line:#f0e3cc;--green:#1a9e54}
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{margin:0;font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
 a{color:var(--red)}
 .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
-header.hero{background:var(--red);color:#fff;padding:56px 0 64px;position:relative;overflow:hidden}
-header.hero:after{content:"";position:absolute;right:-60px;bottom:-120px;width:420px;height:300px;border:46px solid var(--yellow);border-bottom:none;border-radius:210px 210px 0 0;opacity:.18}
+header.hero{background:linear-gradient(135deg,var(--red),var(--deep));color:#fff;padding:52px 0 78px;position:relative;overflow:hidden}
+.arches{position:absolute;right:-30px;bottom:-12px;width:min(440px,60vw);opacity:.22;animation:rise 1.2s ease both}
+@keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:.22}}
+@keyframes up{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 .kicker{color:var(--yellow);letter-spacing:.3em;font-size:13px;font-weight:700}
-h1{font-size:clamp(30px,5.4vw,54px);line-height:1.15;margin:12px 0 14px}
+h1{font-size:clamp(30px,5.6vw,58px);line-height:1.12;margin:12px 0 14px;animation:up .6s ease both}
 h1 em{font-style:normal;color:var(--yellow)}
-.lead{font-size:18px;max-width:640px;opacity:.95;margin:0}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:-36px;position:relative;z-index:2}
-.stat{background:var(--card);border-radius:18px;padding:18px 20px;box-shadow:0 8px 24px rgba(120,60,0,.08)}
+.lead{font-size:18px;max-width:660px;opacity:.95;margin:0;animation:up .6s .1s ease both}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;animation:up .6s .2s ease both}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--yellow);color:var(--ink);font-weight:800;border-radius:999px;padding:11px 22px;text-decoration:none;border:0;font-size:15px;cursor:pointer;font-family:inherit}
+.btn.ghost{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.5)}
+.btn:hover{transform:translateY(-1px)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:-44px;position:relative;z-index:2}
+.stat{background:var(--card);border-radius:18px;padding:18px 20px;box-shadow:0 8px 24px rgba(120,60,0,.08);animation:up .5s ease both}
+.stat:nth-child(2){animation-delay:.05s}.stat:nth-child(3){animation-delay:.1s}.stat:nth-child(4){animation-delay:.15s}
 .stat .k{font-size:13px;color:var(--muted)}
-.stat .v{font-size:28px;font-weight:800;margin-top:2px}
+.stat .v{font-size:26px;font-weight:800;margin-top:2px}
 .stat .s{font-size:13px;color:var(--muted)}
-section{margin:44px 0}
+section{margin:46px 0}
 h2{font-size:24px;margin:0 0 6px}
 .sub{color:var(--muted);margin:0 0 18px}
 .card{background:var(--card);border-radius:20px;padding:22px;box-shadow:0 8px 24px rgba(120,60,0,.06)}
-.bar-row{display:grid;grid-template-columns:64px 1fr 74px;align-items:center;gap:12px;padding:7px 0;cursor:default}
+.note{display:flex;gap:8px;align-items:flex-start;background:#fff3d6;border-radius:12px;padding:10px 14px;font-size:14px;color:#6b4a00;margin-top:14px}
+.bar-row{display:grid;grid-template-columns:56px 1fr 70px 22px;align-items:center;gap:12px;padding:7px 4px;cursor:pointer;border-radius:10px}
+.bar-row:hover{background:#fff8ea}
 .bar-row .c{font-weight:700}
-.bar-track{background:#f7efe1;border-radius:10px;height:30px;position:relative;overflow:hidden}
-.bar{height:100%;border-radius:10px;background:var(--yellow);display:flex;align-items:center;padding-left:10px;font-size:12px;color:#5a3c00;white-space:nowrap;transition:width .8s ease}
-.bar.hi{background:var(--red);color:#fff}.bar.lo{background:var(--green);color:#fff}
+.bar-track{background:#f7efe1;border-radius:10px;height:32px;position:relative;overflow:hidden}
+.bar{height:100%;border-radius:10px;background:var(--yellow);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.bar.hi{background:var(--red)}.bar.lo{background:var(--green)}
+.dot{position:absolute;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;border:2px solid var(--ink);opacity:.75}
 .bar-row .p{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.chev{color:var(--muted);transition:transform .2s}
+.bar-row.open .chev{transform:rotate(90deg)}
+.detail{display:none;margin:2px 0 10px 68px;background:#fffaf0;border:1px solid var(--line);border-radius:12px;padding:6px 14px}
+.detail.show{display:block;animation:up .25s ease}
+.store{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.store:last-child{border-bottom:0}
+.store .nm{font-weight:700}.store .pr{font-weight:800;text-align:right}
+.store .ad{color:var(--muted);font-size:13px}.store .it{color:var(--muted);font-size:13px;text-align:right}
+.legend{font-size:13px;color:var(--muted);margin-top:10px}
 .basket{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:14px;align-items:center}
 .item{text-align:center}
-.item img{width:100%;max-width:160px;aspect-ratio:1;object-fit:contain}
+.item img{width:100%;max-width:160px;aspect-ratio:1;object-fit:contain;transition:transform .3s}
+.item img:hover{transform:scale(1.06) rotate(-2deg)}
 .item .n{font-weight:700}.item .r{color:var(--muted);font-size:14px}
-.eq{font-size:20px;font-weight:800;text-align:center;padding:0 10px}
+.eq{font-size:22px;font-weight:900;text-align:center;padding:0 10px}
 table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
-th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right}
-th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
 th{color:var(--muted);font-weight:600;font-size:13px}
 td.hl{color:var(--red);font-weight:800}
 .tablewrap{overflow-x:auto}
 .save{display:inline-block;background:#e8f6ee;color:var(--green);border-radius:8px;padding:1px 8px;font-weight:700}
-.save.zero{background:#fde8e6;color:var(--red)}
+.save.low{background:#fde8e6;color:var(--red)}
 .combo{display:grid;grid-template-columns:160px 1fr;gap:22px;align-items:center}
 .combo img{width:160px;aspect-ratio:1;object-fit:contain}
 .big{font-size:44px;font-weight:900;color:var(--green);line-height:1}
 .finds{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .find{background:var(--card);border-left:6px solid var(--yellow);border-radius:14px;padding:16px 18px}
 .find b{display:block;font-size:17px;margin-bottom:4px}
+.share{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.share .btn{background:var(--ink);color:#fff}
+.share .btn.alt{background:var(--yellow);color:var(--ink)}
+#shareimg{display:none;margin-top:16px;max-width:100%;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
 .how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .how .card{padding:18px}
 .how code{background:#fff3d6;padding:1px 6px;border-radius:6px;font-size:13px}
+.spark{width:100%;height:160px}
+.empty{color:var(--muted);text-align:center;padding:26px}
+.starband{background:var(--yellow);border-radius:20px;padding:26px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.starband b{font-size:20px}
+.starband .btn{background:var(--ink);color:#fff}
 footer{background:var(--ink);color:#bbb;padding:30px 0;font-size:14px;margin-top:56px}
 footer a{color:var(--yellow)}
-.btn{display:inline-block;background:var(--yellow);color:var(--ink);font-weight:800;border-radius:999px;padding:10px 22px;text-decoration:none;margin-top:22px}
-.spark{width:100%;height:160px}
-.empty{color:var(--muted);text-align:center;padding:30px}
-@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.finds,.how{grid-template-columns:1fr}.basket{grid-template-columns:repeat(3,1fr)}.eq{grid-column:1/-1}.combo{grid-template-columns:1fr;text-align:center}.combo img{margin:0 auto}.bar-row{grid-template-columns:48px 1fr 64px}}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.finds,.how{grid-template-columns:1fr}.basket{grid-template-columns:repeat(3,1fr)}.eq{grid-column:1/-1}.combo{grid-template-columns:1fr;text-align:center}.combo img{margin:0 auto}.bar-row{grid-template-columns:44px 1fr 60px 16px;gap:8px}.detail{margin-left:0}}
 </style>
 </head>
 <body>
 <header class="hero"><div class="wrap">
+  <svg class="arches" viewBox="0 0 200 120" aria-hidden="true"><path d="M10 118 C10 10 50 10 60 60 C70 10 110 10 110 118" fill="none" stroke="#ffbc0d" stroke-width="18" stroke-linecap="round" transform="translate(40 0)"/></svg>
   <div class="kicker">MCD BIG MAC INDEX · 麦门通胀观测站</div>
-  <h1 id="headline">同一个巨无霸，<br>每座城市<em>一个价</em></h1>
-  <p class="lead" id="lead">每天 11:00，通过麦当劳官方 MCP 在 10 座城市核心商圈各下一单「巨无霸 + 中薯条 + 中可乐」，用官方核价拿到真实到手价。</p>
-  <a class="btn" href="https://github.com/TTNAN/mcd-bigmac-index" target="_blank" rel="noopener">⭐ GitHub 开源仓库</a>
+  <h1 id="headline">同一份巨无霸，<br>每家店<em>一个价</em></h1>
+  <p class="lead" id="lead">每天 11:00，通过麦当劳官方 MCP 在 10 座城市核心商圈各取 3 家门店，用官方核价拿到「巨无霸 + 中薯条 + 中可乐」的真实到手价。</p>
+  <div class="ctas">
+    <a class="btn" href="https://github.com/TTNAN/mcd-bigmac-index" target="_blank" rel="noopener">⭐ 去 GitHub 点个 Star</a>
+    <a class="btn ghost" href="#share">📣 分享今日发现</a>
+  </div>
 </div></header>
 
 <div class="wrap">
@@ -75,14 +108,22 @@ footer a{color:var(--yellow)}
 
   <section>
     <h2>🗺️ 城市价格榜</h2>
-    <p class="sub" id="cities-sub">同一份三件套，在各城市采样门店的到手价</p>
-    <div class="card" id="bars"><div class="empty">数据加载中…</div></div>
+    <p class="sub" id="cities-sub">点一下城市，看每家采样门店的地址、营业时间和价格</p>
+    <div class="card"><div id="bars"><div class="empty">数据加载中…</div></div>
+      <div class="legend">柱子 = 城市中位数；白点 = 各家门店价格</div>
+    </div>
+    <div class="note">⚠️ <span>这是<b>核心商圈价</b>：每城取同一商圈 3 家营业中门店的中位数，商场、交通枢纽店可能偏贵，不代表全城平均。</span></div>
   </section>
 
-  <section>
+  <section id="share">
     <h2>🔎 今天的发现</h2>
     <p class="sub">根据当天数据自动生成</p>
     <div class="finds" id="finds"></div>
+    <div class="share">
+      <button class="btn" id="copy">📋 复制今日发现</button>
+      <button class="btn alt" id="mkimg">🖼️ 生成分享图</button>
+    </div>
+    <img id="shareimg" alt="今日巨无霸城市价格榜分享图">
   </section>
 
   <section>
@@ -99,12 +140,12 @@ footer a{color:var(--yellow)}
 
   <section>
     <h2>📋 逐项明细</h2>
-    <p class="sub">差价出在哪一样？红色为该列最高价</p>
+    <p class="sub">各城市中位数价格，红色为该列最高价</p>
     <div class="card tablewrap"><table id="detail"></table></div>
   </section>
 
   <section>
-    <h2>📈 指数走势（上海 = 主序列）</h2>
+    <h2>📈 历史走势</h2>
     <p class="sub" id="trend-sub"></p>
     <div class="card" id="trend"></div>
   </section>
@@ -112,12 +153,17 @@ footer a{color:var(--yellow)}
   <section>
     <h2>⚙️ 数据怎么来的</h2>
     <div class="how">
-      <div class="card"><b>1. 找门店</b><p><code>query-nearby-stores</code> 按城市 + 核心商圈，找一家营业中的麦当劳。</p></div>
+      <div class="card"><b>1. 找门店</b><p><code>query-nearby-stores</code> 按城市 + 核心商圈，取前 3 家营业中的麦当劳。</p></div>
       <div class="card"><b>2. 拉菜单</b><p><code>query-meals</code> 读取实时菜单，匹配巨无霸、中薯条、中可乐和巨无霸三件套。</p></div>
       <div class="card"><b>3. 官方核价</b><p><code>calculate-price</code> 让麦当劳自己算出到手价，不是爬虫，也不是估算。</p></div>
     </div>
-    <p class="sub" style="margin-top:14px">每城目前只采一家核心商圈门店，不代表全城平均。所有原始数据每天提交在仓库 <code>data/</code> 目录，可自由使用。</p>
+    <p class="sub" style="margin-top:14px">指数主序列固定用上海南京东路同一家门店，保证时间可比。所有原始数据每天提交在仓库 <code>data/</code> 目录，可自由使用。</p>
   </section>
+
+  <div class="starband">
+    <div><b>觉得有意思，就点个 ⭐ Star</b><br>数据每天 11:00 自动更新，攒够一个月就是一份公开的麦当劳城市价格时间序列。</div>
+    <a class="btn" href="https://github.com/TTNAN/mcd-bigmac-index" target="_blank" rel="noopener">⭐ Star on GitHub</a>
+  </div>
 </div>
 
 <footer><div class="wrap">
@@ -125,77 +171,106 @@ footer a{color:var(--yellow)}
   参赛作品：麦当劳程序员创意开发大赛 · <a href="https://github.com/TTNAN/mcd-bigmac-index">github.com/TTNAN/mcd-bigmac-index</a><br>
   仅供娱乐与观察，不构成消费建议。
 </div></footer>
+<div class="toast" id="toast"></div>
 
 <script>
+const PAGE = 'https://ttnan.github.io/mcd-bigmac-index/';
 const short = c => c.replace(/市$/, '');
 const y = v => '¥' + Number(v).toFixed(1);
-const esc = s => String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const saving = c => (c.combo && c.combo.menuPrice && c.total) ? Math.round((1 - c.combo.menuPrice / c.total) * 100) : null;
 const priceOf = (c, kw) => { const b = (c.basket || []).find(x => x.name.includes(kw)); return b ? b.menuPrice : null; };
+const shopName = (s, city) => s.replace('麦当劳', '').replace(short(city), '');
+const toast = t => { const el = document.getElementById('toast'); el.textContent = t; el.classList.add('on'); setTimeout(() => el.classList.remove('on'), 1800); };
+let SHARE_TEXT = '', DATA = null;
 
 fetch('data.json?t=' + Date.now()).then(r => r.json()).then(render).catch(() => {
   document.getElementById('bars').innerHTML = '<div class="empty">数据暂时加载失败，请稍后刷新。</div>';
 });
 
 function render(d) {
+  DATA = d;
   const snap = d.snapshot, series = d.series || [];
   if (!snap || !snap.cities.length) return;
   const cities = [...snap.cities].sort((a, b) => b.total - a.total);
   const hi = cities[0], lo = cities[cities.length - 1];
-  const gap = (hi.total - lo.total) / lo.total * 100;
+  const min = lo.total, max = hi.total;
+  const gap = (max - min) / min * 100;
+  const loNames = cities.filter(c => c.total === min).map(c => short(c.city)).join('、');
+  const allStores = cities.flatMap(c => (c.stores || [{store: c.store, total: c.total, address: c.address, hours: c.hours}]).map(s => ({...s, city: c.city})));
+  const sHi = allStores.reduce((a, b) => b.total > a.total ? b : a), sLo = allStores.reduce((a, b) => b.total < a.total ? b : a);
+  const sGap = (sHi.total - sLo.total) / sLo.total * 100;
   const sh = cities.find(c => c.city === '上海市') || cities[0];
   const savings = cities.map(saving).filter(v => v !== null);
   const last = series[series.length - 1];
+  const prev = d.prev;
+  const changes = prev ? cities.filter(c => prev.totals[c.city] != null && Math.abs(prev.totals[c.city] - c.total) >= 0.01)
+    .map(c => ({c: short(c.city), o: prev.totals[c.city], n: c.total})) : null;
 
-  if (gap > 0.5) document.getElementById('headline').innerHTML = `同一个巨无霸，<br>城市间最多差 <em>${gap.toFixed(1)}%</em>`;
-  document.getElementById('lead').textContent = `${snap.date} 实测：${short(lo.city)} ${y(lo.total)}，${short(hi.city)} ${y(hi.total)}。每天 11:00 通过麦当劳官方 MCP 在 ${cities.length} 座城市各核一次价。`;
+  if (sGap > 0.5) document.getElementById('headline').innerHTML = `同一份巨无霸三件套，<br>最多差 <em>${sGap.toFixed(1)}%</em>`;
+  document.getElementById('lead').textContent = `${snap.date} 实测 ${allStores.length} 家门店：最贵 ${y(sHi.total)}（${short(sHi.city)}${shopName(sHi.store, sHi.city)}），最便宜 ${y(sLo.total)}。按城市中位数，${short(hi.city)}比${loNames}贵 ${gap.toFixed(1)}%。`;
 
+  const dayTxt = !prev ? '今天是第一天' : (changes.length ? changes.map(x => `${x.c}${x.n > x.o ? '↑' : '↓'}${Math.abs(x.n - x.o).toFixed(1)}`).join(' ') : '全部持平');
   const stats = [
-    ['今日指数', last ? last.index.toFixed(2) : '100.00', last ? `上海三件套 ${y(last.total)}` : ''],
-    ['最贵城市', `${short(hi.city)} ${y(hi.total)}`, hi.store.replace('麦当劳', '')],
-    ['最便宜城市', `${short(lo.city)} ${y(lo.total)}`, lo.store.replace('麦当劳', '')],
+    ['店间最大价差', sGap.toFixed(1) + '%', `${y(sLo.total)} → ${y(sHi.total)}`],
+    ['城市中位数最贵', `${short(hi.city)} ${y(hi.total)}`, `最便宜 ${loNames} ${y(min)}`],
     ['点套餐最多省', savings.length ? Math.max(...savings) + '%' : '—', '巨无霸三件套 vs 单点'],
+    ['和上次比', dayTxt, prev ? `对比 ${prev.date}` : `指数基期 ${last ? last.date : snap.date}`],
   ];
   document.getElementById('stats').innerHTML = stats.map(([k, v, s]) =>
     `<div class="stat"><div class="k">${k}</div><div class="v">${esc(v)}</div><div class="s">${esc(s)}</div></div>`).join('');
 
-  const min = Math.min(...cities.map(c => c.total)), max = hi.total;
-  const floor = Math.max(0, min - (max - min) * 1.2 - 2);
-  document.getElementById('cities-sub').textContent = `同一份「巨无霸 + 中薯条 + 中可乐」，${snap.date} 各城市采样门店的到手价`;
+  // bars + clickable details
+  const allT = allStores.map(s => s.total);
+  const aMin = Math.min(...allT), aMax = Math.max(...allT);
+  const floor = Math.max(0, aMin - (aMax - aMin) * 1.5 - 2);
+  const pos = v => 12 + (v - floor) / (aMax - floor) * 86;
   document.getElementById('bars').innerHTML = cities.map((c, i) => {
-    const w = 18 + (c.total - floor) / (max - floor) * 82;
     const cls = c.total === max ? 'hi' : (c.total === min ? 'lo' : '');
-    return `<div class="bar-row" title="${esc(c.address || '')}"><div class="c">${short(c.city)}</div>
-      <div class="bar-track"><div class="bar ${cls}" style="width:0" data-w="${w}">${esc(c.store.replace('麦当劳', ''))}</div></div>
-      <div class="p">${y(c.total)}</div></div>`;
+    const sts = c.stores || [{store: c.store, total: c.total, address: c.address, hours: c.hours}];
+    const dots = sts.map(s => `<span class="dot" style="left:${pos(s.total)}%" title="${esc(shopName(s.store, c.city))} ${y(s.total)}"></span>`).join('');
+    const det = sts.map(s => `<div class="store"><div class="nm">${esc(shopName(s.store, c.city))}</div><div class="pr">${y(s.total)}</div>
+      <div class="ad">📍 ${esc(s.address)} · 🕒 ${esc(s.hours)}</div>
+      <div class="it">${s.items ? Object.entries(s.items).map(([k, v]) => `${esc(k)} ${y(v)}`).join(' · ') : ''}${s.comboPrice ? ` · 套餐 ${y(s.comboPrice)}` : ''}</div></div>`).join('');
+    return `<div class="bar-row" data-i="${i}"><div class="c">${short(c.city)}</div>
+      <div class="bar-track"><div class="bar ${cls}" style="width:0" data-w="${pos(c.total)}"></div>${dots}</div>
+      <div class="p">${y(c.total)}</div><div class="chev">›</div></div>
+      <div class="detail" id="det${i}">${det}</div>`;
   }).join('');
-  requestAnimationFrame(() => document.querySelectorAll('.bar').forEach(b => b.style.width = b.dataset.w + '%'));
+  requestAnimationFrame(() => setTimeout(() => document.querySelectorAll('.bar').forEach(b => b.style.width = b.dataset.w + '%'), 60));
+  document.querySelectorAll('.bar-row').forEach(r => r.addEventListener('click', () => {
+    r.classList.toggle('open'); document.getElementById('det' + r.dataset.i).classList.toggle('show');
+  }));
 
   // findings
-  const tiers = {};
-  cities.forEach(c => (tiers[c.total] = tiers[c.total] || []).push(short(c.city)));
-  const loTier = tiers[min].join('、');
   const items = ['巨无霸', '薯条', '可乐'].map(kw => {
-    const vals = cities.map(c => priceOf(c, kw)).filter(v => v != null);
-    return {kw, lo: Math.min(...vals), hi: Math.max(...vals)};
+    const vals = allStores.map(s => s.items && s.items[kw]).filter(v => v != null);
+    const v2 = vals.length ? vals : cities.map(c => priceOf(c, kw)).filter(v => v != null);
+    return {kw, lo: Math.min(...v2), hi: Math.max(...v2)};
   });
   const same = items.filter(i => i.lo === i.hi).map(i => i.kw);
   const diff = items.filter(i => i.lo !== i.hi);
-  const zero = cities.filter(c => saving(c) === 0).map(c => short(c.city));
+  const lowSave = cities.filter(c => saving(c) !== null && saving(c) < Math.max(...savings) - 3);
+  const spreadCity = cities.map(c => { const t = (c.stores || []).map(s => s.total); return {c, sp: t.length ? Math.max(...t) - Math.min(...t) : 0}; }).sort((a, b) => b.sp - a.sp)[0];
+  const tier1 = ['上海', '北京', '广州', '深圳'];
   const finds = [
-    [`不是全国一个价：最多差 ${gap.toFixed(1)}%`, `${loTier}最便宜（${y(min)}），${short(hi.city)}最贵（${y(max)}），同一份能差 ¥${(max - min).toFixed(1)}。`],
-    [`最便宜的一档：${loTier}`, `一线城市不一定更贵，${['上海','北京','广州','深圳'].filter(x => !tiers[min].includes(x)).join('、') || '—'}都比它们贵。`],
-    ['差价出在哪', diff.map(i => `${i.kw} ${y(i.lo)}–${y(i.hi)}`).join('，') + (same.length ? `；${same.join('、')}各地一个价。` : '。')],
-    ['点套餐通常更划算', savings.length ? `巨无霸三件套比单点最多省 ${Math.max(...savings)}%` + (zero.length ? `，但${zero.join('、')}采样门店套餐价和单点一样。` : '。') : '今天没有采到套餐价。'],
+    [`店和店之间最多差 ${sGap.toFixed(1)}%`, `最贵是${short(sHi.city)}${shopName(sHi.store, sHi.city)} ${y(sHi.total)}，最便宜只要 ${y(sLo.total)}。`],
+    spreadCity && spreadCity.sp > 0 ? [`同一商圈，隔条街也不一样`, `${short(spreadCity.c.city)}${spreadCity.c.keyword || ''}三家店价差 ¥${spreadCity.sp.toFixed(1)}。`] :
+      ['同一商圈价格一致', '各城采样门店之间没有价差。'],
+    [`城市中位数：${loNames}最便宜`, `${short(hi.city)} ${y(max)} 最贵，城市间差 ${gap.toFixed(1)}%；一线城市不一定更贵${tier1.filter(x => !loNames.includes(x)).length ? `，${tier1.filter(x => !loNames.includes(x)).join('、')}都比${loNames.split('、')[0]}贵` : ''}。`],
+    ['差价出在哪', diff.map(i => `${i.kw} ${y(i.lo)}–${y(i.hi)}`).join('，') + (same.length ? `；${same.join('、')}各店一个价。` : '。')],
+    ['点套餐通常更划算', savings.length ? `巨无霸三件套比单点最多省 ${Math.max(...savings)}%` + (lowSave.length ? `，但${lowSave.map(c => `${short(c.city)}只省 ${saving(c)}%`).join('，')}。` : '。') : '今天没有采到套餐价。'],
+    ['和上次比', !prev ? '今天是第一天采样，之后每天自动对比涨跌。' : (changes.length ? changes.map(x => `${x.c}${x.n > x.o ? '涨' : '降'} ¥${Math.abs(x.n - x.o).toFixed(1)}`).join('，') + '。' : `和 ${prev.date} 相比，${cities.length} 座城市价格都没变。`)],
   ];
   document.getElementById('finds').innerHTML = finds.map(([t, s]) => `<div class="find"><b>${esc(t)}</b>${esc(s)}</div>`).join('');
+  SHARE_TEXT = `🍔 巨无霸指数 ${snap.date}\n同一份巨无霸三件套（巨无霸+中薯+中可乐），${allStores.length} 家门店里最贵 ${y(sHi.total)}、最便宜 ${y(sLo.total)}，差 ${sGap.toFixed(1)}%。\n城市中位数：${short(hi.city)} ${y(max)} 最贵，${loNames} ${y(min)} 最便宜。\n点套餐最多省 ${Math.max(...savings)}%。\n数据来自麦当劳官方 MCP，每天自动更新 👉 ${PAGE}`;
 
   // basket
-  document.getElementById('basket-sub').textContent = `${short(sh.city)} · ${sh.store.replace('麦当劳', '')} · 官方核价到手价`;
+  document.getElementById('basket-sub').textContent = `${short(sh.city)}中位数价格 · 官方核价到手价`;
   document.getElementById('basket').innerHTML = sh.basket.map(b => {
     const r = items.find(i => b.name.includes(i.kw));
     return `<div class="item">${b.localImage ? `<img src="${esc(b.localImage)}" alt="${esc(b.name)}" loading="lazy">` : ''}
-      <div class="n">${esc(b.name)} ${y(b.menuPrice)}</div><div class="r">${r && r.lo !== r.hi ? `各城 ${y(r.lo)}–${y(r.hi)}` : '各城同价'}</div></div>`;
+      <div class="n">${esc(b.name)} ${y(b.menuPrice)}</div><div class="r">${r && r.lo !== r.hi ? `各店 ${y(r.lo)}–${y(r.hi)}` : '各店同价'}</div></div>`;
   }).join('') + `<div class="eq">＝ ${y(sh.total)}</div>`;
 
   // combo
@@ -206,42 +281,91 @@ function render(d) {
       `<div>${cmb.localImage ? `<img src="${esc(cmb.localImage)}" alt="${esc(cmb.name)}">` : ''}</div>
        <div><div class="big">省 ${sv}%</div>
        <p>在${short(sh.city)}，「${esc(cmb.name)}」${y(cmb.menuPrice)}，三样单点 ${y(sh.total)}，点套餐省 <b>¥${(sh.total - cmb.menuPrice).toFixed(1)}</b>。</p>
-       <p class="sub">${zero.length ? `例外：${zero.join('、')}采样门店的套餐价与单点相同。` : '所有采样城市点套餐都更便宜。'}</p></div>`;
+       <p class="sub">${lowSave.length ? `省得最少：${lowSave.map(c => `${short(c.city)} ${saving(c)}%`).join('、')}。` : '所有采样城市点套餐省得差不多。'}</p></div>`;
   } else {
     document.getElementById('combo').innerHTML = '<div class="empty">今天没有采到套餐价。</div>';
   }
 
-  // detail table
+  // table
   const cols = ['巨无霸', '薯条', '可乐'];
   const colMax = cols.map(k => Math.max(...cities.map(c => priceOf(c, k) || 0)));
+  const colMin = cols.map(k => Math.min(...cities.map(c => priceOf(c, k) || 999)));
   const comboMax = Math.max(...cities.map(c => (c.combo && c.combo.menuPrice) || 0));
   document.getElementById('detail').innerHTML =
-    '<tr><th>城市</th><th>采样门店</th><th>巨无霸</th><th>中薯条</th><th>中可乐</th><th>单点合计</th><th>套餐</th><th>省</th></tr>' +
+    '<tr><th>城市</th><th>巨无霸</th><th>中薯条</th><th>中可乐</th><th>单点合计</th><th>各店价格</th><th>套餐</th><th>省</th></tr>' +
     cities.map(c => {
-      const sv = saving(c);
-      const cp = c.combo && c.combo.menuPrice;
-      return `<tr><td><b>${short(c.city)}</b></td><td>${esc(c.store.replace('麦当劳', ''))}</td>` +
-        cols.map((k, j) => { const v = priceOf(c, k); return `<td class="${v === colMax[j] && items[j].lo !== items[j].hi ? 'hl' : ''}">${v != null ? y(v) : '—'}</td>`; }).join('') +
-        `<td class="${c.total === max ? 'hl' : ''}">${y(c.total)}</td><td class="${cp === comboMax ? 'hl' : ''}">${cp ? y(cp) : '—'}</td>` +
-        `<td>${sv === null ? '—' : `<span class="save ${sv === 0 ? 'zero' : ''}">${sv}%</span>`}</td></tr>`;
+      const sv = saving(c), cp = c.combo && c.combo.menuPrice;
+      const t = (c.stores || []).map(s => s.total);
+      const rng = t.length ? (Math.min(...t) === Math.max(...t) ? y(t[0]) : `${y(Math.min(...t))}–${Math.max(...t).toFixed(1)}`) : y(c.total);
+      return `<tr><td><b>${short(c.city)}</b></td>` +
+        cols.map((k, j) => { const v = priceOf(c, k); return `<td class="${v === colMax[j] && colMax[j] !== colMin[j] ? 'hl' : ''}">${v != null ? y(v) : '—'}</td>`; }).join('') +
+        `<td class="${c.total === max ? 'hl' : ''}">${y(c.total)}</td><td>${rng}</td><td class="${cp === comboMax ? 'hl' : ''}">${cp ? y(cp) : '—'}</td>` +
+        `<td>${sv === null ? '—' : `<span class="save ${lowSave.includes(c) ? 'low' : ''}">${sv}%</span>`}</td></tr>`;
     }).join('');
 
-  // trend
+  // history: index + city gap
+  const gh = d.gapHistory || [];
   const t = document.getElementById('trend');
-  if (series.length < 2) {
-    document.getElementById('trend-sub').textContent = `基期 ${series.length ? series[0].date : snap.date} = 100，每天 11:00 自动更新`;
-    t.innerHTML = `<div class="empty">今天是第一天：指数 ${last ? last.index.toFixed(2) : '100.00'}。<br>之后每天自动加一个点，涨价降价一眼可见。</div>`;
+  const days = Math.max(series.length, gh.length);
+  if (days < 2) {
+    document.getElementById('trend-sub').textContent = '上海锚定门店指数（基期 = 100）与每日城市价差，每天 11:00 自动更新';
+    t.innerHTML = `<div class="empty">今天是第一天：指数 ${last ? last.index.toFixed(2) : '100.00'}，城市价差 ${gap.toFixed(1)}%。<br>每天自动加一个点，攒够一个月，涨价降价、城市差距变大还是变小一眼可见。</div>`;
   } else {
-    document.getElementById('trend-sub').textContent = `基期 ${series[0].date} = 100，共 ${series.length} 天`;
-    const W = 1000, H = 160, P = 24;
-    const vs = series.map(s => s.index), a = Math.min(...vs, 99), b = Math.max(...vs, 101);
-    const pts = series.map((s, i) => [P + i * (W - 2 * P) / (series.length - 1), H - P - (s.index - a) / (b - a) * (H - 2 * P)]);
-    t.innerHTML = `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-      <polyline fill="none" stroke="#da291c" stroke-width="3" points="${pts.map(p => p.join(',')).join(' ')}"/>
-      ${pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#da291c"/>`).join('')}</svg>
-      <p class="sub" style="margin:8px 0 0">最新 ${last.index.toFixed(2)}（${last.date}，${y(last.total)}）</p>`;
+    document.getElementById('trend-sub').textContent = `红线：上海指数（基期 ${series[0].date} = 100）；黄线：城市中位数价差 %，共 ${days} 天`;
+    const W = 1000, H = 180, P = 26;
+    const line = (vals, color) => {
+      if (vals.length < 2) return '';
+      const a = Math.min(...vals), b = Math.max(...vals), span = (b - a) || 1;
+      const pts = vals.map((v, i) => [P + i * (W - 2 * P) / (vals.length - 1), H - P - (v - a) / span * (H - 2 * P)]);
+      return `<polyline fill="none" stroke="${color}" stroke-width="3" points="${pts.map(p => p.join(',')).join(' ')}"/>` +
+        pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${color}"/>`).join('');
+    };
+    t.innerHTML = `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${line(series.map(s => s.index), '#da291c')}${line(gh.map(g => g.gap), '#ffbc0d')}</svg>
+      <p class="sub" style="margin:8px 0 0">最新指数 ${last.index.toFixed(2)}（${last.date}），城市价差 ${gh.length ? gh[gh.length - 1].gap : gap.toFixed(1)}%</p>`;
   }
 }
+
+document.getElementById('copy').addEventListener('click', async () => {
+  if (!SHARE_TEXT) return;
+  try { await navigator.clipboard.writeText(SHARE_TEXT); toast('已复制，去粘贴给朋友吧'); }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = SHARE_TEXT; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('已复制'); }
+});
+
+document.getElementById('mkimg').addEventListener('click', () => {
+  if (!DATA || !DATA.snapshot) return;
+  const snap = DATA.snapshot, cities = [...snap.cities].sort((a, b) => b.total - a.total);
+  const allStores = cities.flatMap(c => c.stores || [{total: c.total}]);
+  const sHi = Math.max(...allStores.map(s => s.total)), sLo = Math.min(...allStores.map(s => s.total));
+  const W = 900, H = 1240, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d'), F = '"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif';
+  const grd = g.createLinearGradient(0, 0, W, 360); grd.addColorStop(0, '#da291c'); grd.addColorStop(1, '#a51d13');
+  g.fillStyle = '#fff8ec'; g.fillRect(0, 0, W, H);
+  g.fillStyle = grd; g.fillRect(0, 0, W, 360);
+  g.strokeStyle = 'rgba(255,188,13,.25)'; g.lineWidth = 34; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(620, 370); g.bezierCurveTo(620, 140, 720, 140, 740, 260); g.bezierCurveTo(760, 140, 860, 140, 860, 370); g.stroke();
+  g.fillStyle = '#ffbc0d'; g.font = `bold 24px ${F}`; g.fillText('巨无霸指数 · ' + snap.date, 56, 76);
+  g.fillStyle = '#fff'; g.font = `900 58px ${F}`; g.fillText('同一份巨无霸三件套', 56, 160);
+  g.fillText('最多差 ', 56, 236);
+  g.fillStyle = '#ffbc0d'; g.fillText(((sHi - sLo) / sLo * 100).toFixed(1) + '%', 56 + g.measureText('最多差 ').width, 236);
+  g.fillStyle = 'rgba(255,255,255,.9)'; g.font = `24px ${F}`;
+  g.fillText(`${allStores.length} 家门店实测：最便宜 ${y(sLo)}，最贵 ${y(sHi)}`, 56, 300);
+  g.fillStyle = '#1d1d1f'; g.font = `bold 30px ${F}`; g.fillText('城市中位数价格榜', 56, 430);
+  const mn = cities[cities.length - 1].total, mx = cities[0].total, fl = Math.max(0, mn - (mx - mn) * 1.5 - 2);
+  cities.forEach((c, i) => {
+    const yy = 470 + i * 62;
+    g.fillStyle = '#1d1d1f'; g.font = `bold 26px ${F}`; g.fillText(short(c.city), 56, yy + 30);
+    g.fillStyle = '#f2e6d0'; g.fillRect(150, yy + 6, 560, 34);
+    g.fillStyle = c.total === mx ? '#da291c' : (c.total === mn ? '#1a9e54' : '#ffbc0d');
+    g.fillRect(150, yy + 6, 560 * (0.12 + 0.88 * (c.total - fl) / (mx - fl)), 34);
+    g.fillStyle = '#1d1d1f'; g.font = `bold 26px ${F}`; g.fillText(y(c.total), 728, yy + 33);
+  });
+  g.fillStyle = '#6e6e73'; g.font = `20px ${F}`;
+  g.fillText('巨无霸 + 中薯条 + 中可乐 · 麦当劳官方 MCP 核价到手价 · 核心商圈 3 店中位数', 56, 1130);
+  g.fillStyle = '#da291c'; g.font = `bold 22px ${F}`; g.fillText(PAGE.replace('https://', ''), 56, 1176);
+  const img = document.getElementById('shareimg'); img.src = cv.toDataURL('image/png'); img.style.display = 'block';
+  const a = document.createElement('a'); a.href = img.src; a.download = `巨无霸指数-${snap.date}.png`; a.click();
+  toast('分享图已生成，手机上可长按保存');
+});
 </script>
 </body>
 </html>

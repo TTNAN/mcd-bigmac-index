@@ -5,7 +5,7 @@
 追加写入 data/prices.jsonl. Token 只从环境变量 MCD_MCP_TOKEN 读取,
 绝不落盘、不进仓库.
 
-调用链 (到店自取口径, beType=1/orderType=1), 每个采样城市各跑一遍:
+调用链 (到店自取口径, beType=1/orderType=1), 每个采样城市同商圈最多 3 家门店各跑一遍:
     query-nearby-stores -> query-meals -> calculate-price
 
 产出:
@@ -151,34 +151,36 @@ def yuan(v):
         return None
 
 
-def snapshot_city(session, city, keyword):
-    """采一个城市. 返回 (record | None, session)."""
-    stores, session = call_tool(session, "query-nearby-stores", {
-        "searchType": 2, "city": city, "keyword": keyword, "beType": 1,
-    })
-    store_list = stores.get("data", []) if isinstance(stores, dict) else []
-    store = next((s for s in store_list if s.get("businessStatus")), None)
-    store = store or (store_list[0] if store_list else None)
-    if not store:
-        print(f"[{city}] 附近没有可用门店, 跳过")
-        return None, session
-    store_code = store["storeCode"]
+STORES_PER_CITY = max(1, int(os.environ.get("MCD_STORES_PER_CITY", "3")))
 
+
+def median(vals):
+    vals = sorted(v for v in vals if isinstance(v, (int, float)))
+    if not vals:
+        return None
+    n = len(vals)
+    return vals[n // 2] if n % 2 else round((vals[n // 2 - 1] + vals[n // 2]) / 2, 2)
+
+
+def snapshot_store(session, city, store):
+    """采一家门店: 菜单匹配篮子 + 官方核价 + 套餐对照. 返回 (dict | None, session)."""
+    store_code = store["storeCode"]
+    name = store.get("storeName", store_code)
     menu, session = call_tool(
         session, "query-meals", {"storeCode": store_code, **ORDER_CTX})
     meals = menu.get("data", {}).get("meals", {}) if isinstance(menu, dict) else {}
     if not isinstance(meals, dict) or not meals:
-        print(f"[{city}] 菜单为空, 跳过")
+        print(f"[{city}] {name} 菜单为空, 跳过")
         return None, session
 
     basket = []
     for keyword_, excludes, spec in BASKET:
         hit = match_product(meals, keyword_, excludes, spec)
         if not hit:
-            print(f"[{city}] 未找到 [{keyword_}] (可能当前时段未售), 跳过")
+            print(f"[{city}] {name} 未找到 [{keyword_}] (可能当前时段未售), 跳过")
             return None, session
-        _, code, name, m = hit
-        basket.append({"productCode": code, "quantity": 1, "name": name,
+        _, code, pname, m = hit
+        basket.append({"productCode": code, "quantity": 1, "name": pname,
                        "menuPrice": yuan(m.get("currentPrice")),
                        "image": m.get("image")})
 
@@ -188,15 +190,13 @@ def snapshot_city(session, city, keyword):
                   for b in basket],
     })
     data = priced.get("data", {}) if isinstance(priced, dict) else {}
-    # calculate-price 金额单位为分
-    total = data.get("price") if isinstance(data, dict) else None
+    total = data.get("price") if isinstance(data, dict) else None  # 单位: 分
     if not isinstance(total, (int, float)):
-        print(f"[{city}] 未能解析总价: {json.dumps(priced, ensure_ascii=False)[:300]}",
+        print(f"[{city}] {name} 未能解析总价: {json.dumps(priced, ensure_ascii=False)[:300]}",
               file=sys.stderr)
         return None, session
-    total = round(total / 100, 2)
 
-    # 对照组: 巨无霸套餐 (官方三件套) 的菜单价, 用来算"套餐帮你省多少"
+    # 对照组: 官方「巨无霸三件套」套餐的菜单价, 用来算"套餐帮你省多少"
     combo = match_product(meals, "巨无霸", ("双层", "早餐", "1+1", "随心配"),
                           "", need="三件套")
     combo_rec = None
@@ -205,13 +205,70 @@ def snapshot_city(session, city, keyword):
         combo_rec = {"productCode": ccode, "name": cname,
                      "menuPrice": yuan(cm.get("currentPrice")),
                      "image": cm.get("image")}
+    return {"store": name, "storeCode": store_code,
+            "address": store.get("address", ""),
+            "hours": f'{store.get("businessStartTime", "")}-{store.get("businessEndTime", "")}',
+            "basket": basket, "total": round(total / 100, 2),
+            "combo": combo_rec}, session
 
-    rec = {"city": city, "store": store.get("storeName", ""),
-           "storeCode": store_code, "address": store.get("address", ""),
-           "hours": f'{store.get("businessStartTime", "")}-{store.get("businessEndTime", "")}',
-           "basket": basket, "total": total, "combo": combo_rec}
-    print(f"[{city}] {rec['store']} 篮子 {total} 元"
-          + (f" | {combo_rec['name']} {combo_rec['menuPrice']} 元" if combo_rec else ""))
+
+def snapshot_city(session, city, keyword):
+    """采一个城市: 同商圈最多 STORES_PER_CITY 家营业中门店, 城市价取中位数.
+
+    返回 (record | None, session). record 顶层的 store/basket/combo 为第一家
+    (锚定门店, 用于主序列保持时间可比), total/basket 单价/套餐价为多店中位数,
+    stores 列出每家门店的明细.
+    """
+    stores, session = call_tool(session, "query-nearby-stores", {
+        "searchType": 2, "city": city, "keyword": keyword, "beType": 1,
+    })
+    store_list = stores.get("data", []) if isinstance(stores, dict) else []
+    open_ = [s for s in store_list if s.get("businessStatus")] or store_list
+    if not open_:
+        print(f"[{city}] 附近没有可用门店, 跳过")
+        return None, session
+
+    samples = []
+    for st in open_:
+        if len(samples) >= STORES_PER_CITY:
+            break
+        try:
+            rec, session = snapshot_store(session, city, st)
+        except Exception as e:  # 单店失败换下一家
+            print(f"[{city}] {st.get('storeName')} 采集失败: {e}", file=sys.stderr)
+            rec = None
+        if rec:
+            samples.append(rec)
+    if not samples:
+        return None, session
+
+    anchor = samples[0]
+    basket = []
+    for i, b in enumerate(anchor["basket"]):
+        b = dict(b)
+        b["anchorPrice"] = b["menuPrice"]
+        b["menuPrice"] = median(s["basket"][i]["menuPrice"] for s in samples
+                                if len(s["basket"]) > i)
+        basket.append(b)
+    combo = None
+    combos = [s["combo"]["menuPrice"] for s in samples if s.get("combo")]
+    if anchor.get("combo") and combos:
+        combo = dict(anchor["combo"], menuPrice=median(combos),
+                     anchorPrice=anchor["combo"]["menuPrice"])
+
+    rec = {"city": city, "keyword": keyword,
+           "store": anchor["store"], "storeCode": anchor["storeCode"],
+           "address": anchor["address"], "hours": anchor["hours"],
+           "anchorTotal": anchor["total"],
+           "total": median(s["total"] for s in samples),
+           "basket": basket, "combo": combo,
+           "stores": [{k: s[k] for k in ("store", "storeCode", "address", "hours", "total")}
+                      | {"comboPrice": (s.get("combo") or {}).get("menuPrice"),
+                         "items": {b["name"]: b["menuPrice"] for b in s["basket"]}}
+                      for s in samples]}
+    print(f"[{city}] {len(samples)} 家门店, 中位数 {rec['total']} 元 "
+          "(" + ", ".join(s["store"].replace("麦当劳", "") + " " + str(s["total"]) for s in samples) + ")"
+          + (f" | 套餐 {combo['menuPrice']} 元" if combo else ""))
     return rec, session
 
 
@@ -266,7 +323,9 @@ def main():
         if os.path.exists(path):
             rows = [l for l in open(path, encoding="utf-8")
                     if l.strip() and json.loads(l).get("date") != today]
-        rows.append(json.dumps({"date": today, **main_rec},
+        main_row = {k: v for k, v in main_rec.items() if k != "stores"}
+        main_row["total"] = main_rec.get("anchorTotal", main_rec["total"])  # 主序列只认锚定门店
+        rows.append(json.dumps({"date": today, **main_row},
                                ensure_ascii=False) + "\n")
         with open(path, "w", encoding="utf-8") as f:
             f.writelines(rows)
