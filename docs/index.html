@@ -75,7 +75,7 @@ td.hl{color:var(--red);font-weight:800}
 .share{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 .share .btn{background:var(--ink);color:#fff}
 .share .btn.alt{background:var(--yellow);color:var(--ink)}
-#shareimg{display:none;margin-top:16px;max-width:100%;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+#shareimg{display:none;margin:16px auto 0;width:min(100%,540px);border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
 .how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .how .card{padding:18px}
 .how code{background:#fff3d6;padding:1px 6px;border-radius:6px;font-size:13px}
@@ -228,7 +228,8 @@ function render(d) {
   document.getElementById('bars').innerHTML = cities.map((c, i) => {
     const cls = c.total === max ? 'hi' : (c.total === min ? 'lo' : '');
     const sts = c.stores || [{store: c.store, total: c.total, address: c.address, hours: c.hours}];
-    const dots = sts.map(s => `<span class="dot" style="left:${pos(s.total)}%" title="${esc(shopName(s.store, c.city))} ${y(s.total)}"></span>`).join('');
+    const seen = {};
+    const dots = sts.map(s => { const k = s.total, n = (seen[k] = (seen[k] || 0) + 1) - 1; return `<span class="dot" style="left:calc(${pos(s.total)}% + ${n * 9}px)" title="${esc(shopName(s.store, c.city))} ${y(s.total)}"></span>`; }).join('');
     const det = sts.map(s => `<div class="store"><div class="nm">${esc(shopName(s.store, c.city))}</div><div class="pr">${y(s.total)}</div>
       <div class="ad">📍 ${esc(s.address)} · 🕒 ${esc(s.hours)}</div>
       <div class="it">${s.items ? Object.entries(s.items).map(([k, v]) => `${esc(k)} ${y(v)}`).join(' · ') : ''}${s.comboPrice ? ` · 套餐 ${y(s.comboPrice)}` : ''}</div></div>`).join('');
@@ -341,8 +342,9 @@ document.getElementById('mkimg').addEventListener('click', () => {
   const grd = g.createLinearGradient(0, 0, W, 360); grd.addColorStop(0, '#da291c'); grd.addColorStop(1, '#a51d13');
   g.fillStyle = '#fff8ec'; g.fillRect(0, 0, W, H);
   g.fillStyle = grd; g.fillRect(0, 0, W, 360);
+  g.save(); g.beginPath(); g.rect(0, 0, W, 360); g.clip();
   g.strokeStyle = 'rgba(255,188,13,.25)'; g.lineWidth = 34; g.lineCap = 'round';
-  g.beginPath(); g.moveTo(620, 370); g.bezierCurveTo(620, 140, 720, 140, 740, 260); g.bezierCurveTo(760, 140, 860, 140, 860, 370); g.stroke();
+  g.beginPath(); g.moveTo(620, 380); g.bezierCurveTo(620, 140, 720, 140, 740, 260); g.bezierCurveTo(760, 140, 860, 140, 860, 380); g.stroke(); g.restore();
   g.fillStyle = '#ffbc0d'; g.font = `bold 24px ${F}`; g.fillText('巨无霸指数 · ' + snap.date, 56, 76);
   g.fillStyle = '#fff'; g.font = `900 58px ${F}`; g.fillText('同一份巨无霸三件套', 56, 160);
   g.fillText('最多差 ', 56, 236);
