@@ -141,6 +141,11 @@ def main():
         "clientInfo": {"name": "mcd-bigmac-index", "version": "0.1.0"},
     })
     print(f"已连接 MCP, session={session[:12]}..." if session else "已连接 MCP")
+    # 按 MCP 规范补发 initialized 通知 (部分 Server 要求)
+    try:
+        rpc("notifications/initialized", {}, session)
+    except Exception:
+        pass
 
     # 2. 工具清单留档 (诊断用)
     data, session = rpc("tools/list", {}, session)
@@ -205,6 +210,10 @@ def main():
             if isinstance(v, (int, float)) and "amount" in k.lower():
                 total = v
                 break
+    try:
+        total = float(total)
+    except (TypeError, ValueError):
+        total = None
     print(f"篮子总价: {total}")
 
     # 6. 落盘
