@@ -1,0 +1,4 @@
+data/tool-schemas.json
+data/menu-latest.json
+__pycache__/
+*.pyc
