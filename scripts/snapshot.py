@@ -5,8 +5,13 @@
 追加写入 data/prices.jsonl. Token 只从环境变量 MCD_MCP_TOKEN 读取,
 绝不落盘、不进仓库.
 
-调用链 (到店自取口径, beType=1/orderType=1):
+调用链 (到店自取口径, beType=1/orderType=1), 每个采样城市各跑一遍:
     query-nearby-stores -> query-meals -> calculate-price
+
+产出:
+    data/prices.jsonl       主序列 (基准城市), 每天一行, append-only
+    data/cities/日期.json    当天全部城市的篮子价、单品价、套餐价
+    data/cities-latest.json 最近一次多城市快照 (README 城市榜读这个)
 
 用法:
     MCD_MCP_TOKEN=xxx python scripts/snapshot.py
@@ -20,9 +25,17 @@ import urllib.request
 
 MCP_URL = os.environ.get("MCD_MCP_URL", "https://mcp.mcd.cn")
 TOKEN = os.environ.get("MCD_MCP_TOKEN", "")
-# 采样门店定位 (到店自取)
-CITY = os.environ.get("MCD_CITY", "上海市")
-KEYWORD = os.environ.get("MCD_KEYWORD", "南京东路")
+# 采样城市: (城市, 商圈关键词). 第一个城市是指数主序列的基准门店.
+# 可用环境变量 MCD_CITIES 覆盖, 格式 "上海市:南京东路,北京市:王府井"
+DEFAULT_CITIES = [
+    ("上海市", "南京东路"), ("北京市", "王府井"), ("广州市", "天河城"),
+    ("深圳市", "华强北"), ("杭州市", "湖滨"), ("成都市", "春熙路"),
+    ("重庆市", "解放碑"), ("武汉市", "江汉路"), ("南京市", "新街口"),
+    ("西安市", "钟楼"),
+]
+_env_cities = os.environ.get("MCD_CITIES", "").strip()
+CITIES = ([tuple(p.split(":", 1)) for p in _env_cities.split(",") if ":" in p]
+          or DEFAULT_CITIES)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -30,9 +43,9 @@ os.makedirs(DATA, exist_ok=True)
 
 # 篮子: (关键词, 排除词, 规格偏好)
 BASKET = [
-    ("巨无霸", ("套餐", "双层", "早餐"), None),
-    ("薯条", ("套餐",), "中"),
-    ("可乐", ("套餐", "雪碧", "美年达"), "中"),
+    ("巨无霸", ("套餐", "双层", "早餐", "随心配", "1+1", "组合"), None),
+    ("薯条", ("套餐", "随心配", "1+1", "组合", "分享"), "中"),
+    ("可乐", ("套餐", "雪碧", "美年达", "零", "随心配", "1+1", "组合"), "中"),
 ]
 
 ORDER_CTX = {"orderType": 1, "beType": 1}  # 到店自取
@@ -84,12 +97,22 @@ def extract_payload(result):
     for marker in ('{"success"', '{"code"'):
         i = text.find(marker)
         if i >= 0:
-            return json.loads(text[i:])
+            return json.JSONDecoder().raw_decode(text[i:])[0]
     # 兜底: 整个 text 当 JSON 试一次
     return json.loads(text)
 
 
+USE_MCPCALL = os.environ.get("MCD_USE_MCPCALL") == "1"
+
+
 def call_tool(session, name, arguments):
+    if USE_MCPCALL:  # 本地调试: 走已配置好的 MCP 客户端, 不需要明文 Token
+        import subprocess
+        out = subprocess.run(["mcpcall", "call", "mcd", name,
+                              json.dumps(arguments, ensure_ascii=False)],
+                             capture_output=True, text=True, timeout=90)
+        return extract_payload({"content": [{"type": "text",
+                                             "text": out.stdout}]}), session
     data, session = rpc("tools/call",
                         {"name": name, "arguments": arguments}, session)
     if "error" in data:
@@ -97,7 +120,7 @@ def call_tool(session, name, arguments):
     return extract_payload(data.get("result", {})), session
 
 
-def match_product(meals, keyword, excludes, spec_pref):
+def match_product(meals, keyword, excludes, spec_pref, need=None):
     """meals: {code: {name, currentPrice, ...}}, 按关键词找最匹配的单品."""
     cands = []
     for code, m in meals.items():
@@ -106,13 +129,14 @@ def match_product(meals, keyword, excludes, spec_pref):
         name = str(m.get("name") or "")
         if keyword not in name:
             continue
+        if need and need not in name:
+            continue
         if any(e in name for e in excludes):
             continue
         score = 0
         if spec_pref and spec_pref in name:
             score += 10
-        if "套餐" in name:
-            score -= 5
+        score -= len(name) * 0.1  # 名字越短越"标准"
         cands.append((score, code, name, m))
     if not cands:
         return None
@@ -120,98 +144,133 @@ def match_product(meals, keyword, excludes, spec_pref):
     return cands[0]
 
 
-def main():
-    if not TOKEN:
-        print("缺少 MCD_MCP_TOKEN 环境变量, 退出.", file=sys.stderr)
-        return 2
-
-    # 1. 建连
-    _, session = rpc("initialize", {
-        "protocolVersion": "2024-11-05",
-        "capabilities": {},
-        "clientInfo": {"name": "mcd-bigmac-index", "version": "0.1.0"},
-    })
+def yuan(v):
     try:
-        rpc("notifications/initialized", {}, session)
-    except Exception:
-        pass
-    print("已连接 MCP")
+        return round(float(v), 2)
+    except (TypeError, ValueError):
+        return None
 
-    # 2. 找一家固定门店 (取第一家在营业的)
+
+def snapshot_city(session, city, keyword):
+    """采一个城市. 返回 (record | None, session)."""
     stores, session = call_tool(session, "query-nearby-stores", {
-        "searchType": 2, "city": CITY, "keyword": KEYWORD, "beType": 1,
+        "searchType": 2, "city": city, "keyword": keyword, "beType": 1,
     })
     store_list = stores.get("data", []) if isinstance(stores, dict) else []
     store = next((s for s in store_list if s.get("businessStatus")), None)
     store = store or (store_list[0] if store_list else None)
     if not store:
-        print("附近没有可用门店", file=sys.stderr)
-        return 4
+        print(f"[{city}] 附近没有可用门店, 跳过")
+        return None, session
     store_code = store["storeCode"]
-    store_name = store.get("storeName", "")
-    print(f"采样门店: {store_name} ({store_code})")
 
-    # 3. 拉菜单, 匹配篮子单品
     menu, session = call_tool(
         session, "query-meals", {"storeCode": store_code, **ORDER_CTX})
     meals = menu.get("data", {}).get("meals", {}) if isinstance(menu, dict) else {}
     if not isinstance(meals, dict) or not meals:
-        print("菜单为空或结构异常", file=sys.stderr)
-        return 5
-    with open(os.path.join(DATA, "menu-latest.json"), "w",
-              encoding="utf-8") as f:
-        json.dump(menu, f, ensure_ascii=False, indent=2)
+        print(f"[{city}] 菜单为空, 跳过")
+        return None, session
 
     basket = []
-    for keyword, excludes, spec in BASKET:
-        hit = match_product(meals, keyword, excludes, spec)
+    for keyword_, excludes, spec in BASKET:
+        hit = match_product(meals, keyword_, excludes, spec)
         if not hit:
-            # 非正餐时段(如早餐)篮子单品可能不在售: 当天跳过, 不算失败
-            print(f"菜单中未找到 [{keyword}] (可能当前时段未售), 跳过今日.")
-            return 0
-        _, code, name, _ = hit
-        basket.append({"productCode": code, "quantity": 1, "name": name})
-        print(f"篮子成分: {name} ({code})")
+            print(f"[{city}] 未找到 [{keyword_}] (可能当前时段未售), 跳过")
+            return None, session
+        _, code, name, m = hit
+        basket.append({"productCode": code, "quantity": 1, "name": name,
+                       "menuPrice": yuan(m.get("currentPrice")),
+                       "image": m.get("image")})
 
-    # 4. 算到手总价
-    total_info, session = call_tool(session, "calculate-price", {
-        "storeCode": store_code,
-        **ORDER_CTX,
+    priced, session = call_tool(session, "calculate-price", {
+        "storeCode": store_code, **ORDER_CTX,
         "items": [{"productCode": b["productCode"], "quantity": 1}
                   for b in basket],
     })
-    data = total_info.get("data", total_info) if isinstance(total_info, dict) \
-        else {}
-    total = None
-    if isinstance(data, dict):
-        for k in ("totalAmount", "total", "payAmount", "actualAmount",
-                  "amount", "realPayAmount", "price", "totalPrice"):
-            if isinstance(data.get(k), (int, float)):
-                total = float(data[k])
-                break
-        if total is None:
-            for k, v in data.items():
-                if isinstance(v, (int, float)) and "amount" in k.lower():
-                    total = float(v)
-                    break
-    # MCP 金额单位为分, 折算成元
-    if total is not None and total > 200:
-        total = round(total / 100, 2)
-    print(f"篮子总价: {total} 元")
-    if total is None:
-        print(f"未能解析总价, 原始返回: "
-              f"{json.dumps(total_info, ensure_ascii=False)[:400]}",
+    data = priced.get("data", {}) if isinstance(priced, dict) else {}
+    # calculate-price 金额单位为分
+    total = data.get("price") if isinstance(data, dict) else None
+    if not isinstance(total, (int, float)):
+        print(f"[{city}] 未能解析总价: {json.dumps(priced, ensure_ascii=False)[:300]}",
               file=sys.stderr)
-        return 6
+        return None, session
+    total = round(total / 100, 2)
 
-    # 5. 落盘
-    today = datetime.date.today().isoformat()
-    record = {"date": today, "store": store_name, "storeCode": store_code,
-              "basket": basket, "total": total}
-    with open(os.path.join(DATA, "prices.jsonl"), "a",
-              encoding="utf-8") as f:
-        f.write(json.dumps(record, ensure_ascii=False) + "\n")
-    print(f"已写入 data/prices.jsonl ({today})")
+    # 对照组: 巨无霸套餐 (官方三件套) 的菜单价, 用来算"套餐帮你省多少"
+    combo = match_product(meals, "巨无霸", ("双层", "早餐", "1+1", "随心配"),
+                          "", need="三件套")
+    combo_rec = None
+    if combo:
+        _, ccode, cname, cm = combo
+        combo_rec = {"productCode": ccode, "name": cname,
+                     "menuPrice": yuan(cm.get("currentPrice")),
+                     "image": cm.get("image")}
+
+    rec = {"city": city, "store": store.get("storeName", ""),
+           "storeCode": store_code, "address": store.get("address", ""),
+           "hours": f'{store.get("businessStartTime", "")}-{store.get("businessEndTime", "")}',
+           "basket": basket, "total": total, "combo": combo_rec}
+    print(f"[{city}] {rec['store']} 篮子 {total} 元"
+          + (f" | {combo_rec['name']} {combo_rec['menuPrice']} 元" if combo_rec else ""))
+    return rec, session
+
+
+def main():
+    if not TOKEN and not USE_MCPCALL:
+        print("缺少 MCD_MCP_TOKEN 环境变量, 退出.", file=sys.stderr)
+        return 2
+
+    session = None
+    if not USE_MCPCALL:
+        _, session = rpc("initialize", {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "mcd-bigmac-index", "version": "0.2.0"},
+        })
+        try:
+            rpc("notifications/initialized", {}, session)
+        except Exception:
+            pass
+        print("已连接 MCP")
+
+    today = os.environ.get("SNAPSHOT_DATE") or \
+        datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).date().isoformat()
+    records = []
+    for city, keyword in CITIES:
+        try:
+            rec, session = snapshot_city(session, city, keyword)
+        except Exception as e:  # 单个城市失败不影响其它城市
+            print(f"[{city}] 采集失败: {e}", file=sys.stderr)
+            rec = None
+        if rec:
+            records.append(rec)
+
+    if not records:
+        print("今天没有采到任何城市 (可能不在午餐时段), 不写数据.")
+        return 0
+
+    # 多城市快照
+    os.makedirs(os.path.join(DATA, "cities"), exist_ok=True)
+    snap = {"date": today, "cities": records}
+    for p in (os.path.join(DATA, "cities", f"{today}.json"),
+              os.path.join(DATA, "cities-latest.json")):
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(snap, f, ensure_ascii=False, indent=2)
+
+    # 主序列: 只认基准城市, 同一天只保留一条
+    base_city = CITIES[0][0]
+    main_rec = next((r for r in records if r["city"] == base_city), None)
+    if main_rec:
+        path = os.path.join(DATA, "prices.jsonl")
+        rows = []
+        if os.path.exists(path):
+            rows = [l for l in open(path, encoding="utf-8")
+                    if l.strip() and json.loads(l).get("date") != today]
+        rows.append(json.dumps({"date": today, **main_rec},
+                               ensure_ascii=False) + "\n")
+        with open(path, "w", encoding="utf-8") as f:
+            f.writelines(rows)
+    print(f"已写入 {len(records)} 个城市 ({today})")
     return 0
 
 
