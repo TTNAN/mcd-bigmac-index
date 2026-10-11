@@ -21,6 +21,7 @@ import datetime
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 
 MCP_URL = os.environ.get("MCD_MCP_URL", "https://mcp.mcd.cn")
@@ -279,11 +280,21 @@ def main():
 
     session = None
     if not USE_MCPCALL:
-        _, session = rpc("initialize", {
-            "protocolVersion": "2024-11-05",
-            "capabilities": {},
-            "clientInfo": {"name": "mcd-bigmac-index", "version": "0.2.0"},
-        })
+        try:
+            _, session = rpc("initialize", {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "mcd-bigmac-index", "version": "0.2.0"},
+            })
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", "replace")[:300]
+            hint = "Token 无效或已过期, 请到 open.mcd.cn/mcp 重新激活并更新仓库 Secret" \
+                if e.code in (401, 403) else "MCP 服务暂时不可用"
+            print(f"::error::连接麦当劳 MCP 失败 HTTP {e.code}: {hint}. {body}")
+            return 1
+        except Exception as e:  # noqa: BLE001
+            print(f"::error::连接麦当劳 MCP 失败: {type(e).__name__}: {e}")
+            return 1
         try:
             rpc("notifications/initialized", {}, session)
         except Exception:
@@ -297,13 +308,13 @@ def main():
         try:
             rec, session = snapshot_city(session, city, keyword)
         except Exception as e:  # 单个城市失败不影响其它城市
-            print(f"[{city}] 采集失败: {e}", file=sys.stderr)
+            print(f"::warning::[{city}] 采集失败: {type(e).__name__}: {str(e)[:200]}")
             rec = None
         if rec:
             records.append(rec)
 
     if not records:
-        print("今天没有采到任何城市 (可能不在午餐时段), 不写数据.")
+        print("::warning::今天没有采到任何城市 (可能不在午餐时段或接口异常), 不写数据.")
         return 0
 
     # 多城市快照
