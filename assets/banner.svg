@@ -6,8 +6,8 @@
 <text x="60" y="88" font-size="22" fill="#ffbc0d" letter-spacing="6">MCD BIG MAC INDEX · 麦门通胀观测站</text>
 <text x="60" y="170" font-size="72" fill="url(#t)" font-weight="bold">巨无霸指数</text>
 <text x="60" y="262" font-size="96" fill="#fff" font-weight="bold">100.00</text>
-<text x="330" y="262" font-size="22" fill="#aaa">上海三件套 ¥48.5</text>
+<text x="440" y="258" font-size="24" fill="#aaa">上海三件套 ¥48.5</text>
 <text x="60" y="320" font-size="20" fill="#ccc">一个汉堡，一面镜子 · 每天 11:00 通过麦当劳官方 MCP 自动采集真实到手价</text>
 <text x="60" y="372" font-size="16" fill="#888">更新于 2026-10-11 · 致敬《经济学人》Big Mac Index (1986)</text>
-<rect x="680" y="120" width="470" height="76" rx="14" fill="#ffffff" opacity="0.06"/><text x="708" y="151" font-size="18" fill="#bbb">最贵城市</text><text x="708" y="181" font-size="26" fill="#fff" font-weight="bold">重庆 ¥54.5</text><rect x="680" y="212" width="470" height="76" rx="14" fill="#ffffff" opacity="0.06"/><text x="708" y="243" font-size="18" fill="#bbb">最便宜城市</text><text x="708" y="273" font-size="26" fill="#fff" font-weight="bold">杭州 ¥48.5</text><rect x="680" y="304" width="470" height="76" rx="14" fill="#ffffff" opacity="0.06"/><text x="708" y="335" font-size="18" fill="#bbb">买套餐比单点省</text><text x="708" y="365" font-size="26" fill="#fff" font-weight="bold">23%</text>
+<rect x="680" y="120" width="470" height="76" rx="14" fill="#ffffff" opacity="0.06"/><text x="708" y="151" font-size="18" fill="#bbb">最贵城市</text><text x="708" y="181" font-size="26" fill="#fff" font-weight="bold">重庆 ¥54.5</text><rect x="680" y="212" width="470" height="76" rx="14" fill="#ffffff" opacity="0.06"/><text x="708" y="243" font-size="18" fill="#bbb">最便宜城市</text><text x="708" y="273" font-size="26" fill="#fff" font-weight="bold">杭州 ¥48.5</text><rect x="680" y="304" width="470" height="76" rx="14" fill="#ffffff" opacity="0.06"/><text x="708" y="335" font-size="18" fill="#bbb">买套餐比单点最多省</text><text x="708" y="365" font-size="26" fill="#fff" font-weight="bold">26%</text>
 </svg>

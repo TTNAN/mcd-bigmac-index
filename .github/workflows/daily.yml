@@ -36,6 +36,6 @@ jobs:
         run: |
           git config user.name "bigmac-bot"
           git config user.email "bigmac-bot@users.noreply.github.com"
-          git add data/ assets/ README.md
+          git add data/ assets/ docs/ README.md
           git diff --staged --quiet || git commit -m "chore: 每日指数更新 $(TZ=Asia/Shanghai date +%F)"
           git push

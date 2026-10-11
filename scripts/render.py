@@ -11,11 +11,36 @@
 
 import json
 import os
+import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 ASSETS = os.path.join(ROOT, "assets")
+DOCS = os.path.join(ROOT, "docs")
+ITEMS = os.path.join(DOCS, "items")
 os.makedirs(ASSETS, exist_ok=True)
+os.makedirs(ITEMS, exist_ok=True)
+
+
+def local_image(code, url):
+    """把官方菜单图下载到 docs/items/, 避免外链防盗链/被代理拦截导致图片挂掉.
+    返回相对仓库根目录的路径; 下载失败返回 None."""
+    if not url:
+        return None
+    ext = os.path.splitext(url.split("?")[0])[1].lower() or ".png"
+    name = f"{code}{ext}"
+    path = os.path.join(ITEMS, name)
+    if not os.path.exists(path):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                data = r.read()
+            with open(path, "wb") as f:
+                f.write(data)
+        except Exception as e:  # noqa: BLE001
+            print(f"图片下载失败 {url}: {e}")
+            return None
+    return f"docs/items/{name}"
 
 FONT = "'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','Source Han Sans SC',sans-serif"
 RED, YELLOW, GREEN, BG = "#e4002b", "#ffbc0d", "#1a9e54", "#141414"
@@ -174,7 +199,7 @@ def svg_banner(series, snap, path):
         stats.append(("最便宜城市", f'{short_city(lo["city"])} ¥{lo["total"]:.1f}'))
         savings = [s for s in (combo_saving(c) for c in cities) if s is not None]
         if savings:
-            stats.append(("买套餐比单点省", f"{sum(savings)/len(savings):.0f}%"))
+            stats.append(("买套餐比单点最多省", f"{max(savings):.0f}%"))
     price = f'¥{base["total"]:.1f}' if base else ""
     cards = ""
     for i, (k, v) in enumerate(stats):
@@ -191,7 +216,7 @@ def svg_banner(series, snap, path):
 <text x="60" y="88" font-size="22" fill="{YELLOW}" letter-spacing="6">MCD BIG MAC INDEX · 麦门通胀观测站</text>
 <text x="60" y="170" font-size="72" fill="url(#t)" font-weight="bold">巨无霸指数</text>
 <text x="60" y="262" font-size="96" fill="#fff" font-weight="bold">{idx:.2f}</text>
-<text x="330" y="262" font-size="22" fill="#aaa">上海三件套 {price}</text>
+<text x="440" y="258" font-size="24" fill="#aaa">上海三件套 {price}</text>
 <text x="60" y="320" font-size="20" fill="#ccc">一个汉堡，一面镜子 · 每天 11:00 通过麦当劳官方 MCP 自动采集真实到手价</text>
 <text x="60" y="372" font-size="16" fill="#888">更新于 {date} · 致敬《经济学人》Big Mac Index (1986)</text>
 {cards}
@@ -242,7 +267,7 @@ def basket_block(snap):
     base = next((c for c in snap["cities"] if c["city"] == "上海市"), snap["cities"][0])
     cells, names = [], []
     for b in base["basket"]:
-        img = b.get("image")
+        img = local_image(b.get("productCode"), b.get("image"))
         if img:
             cells.append(f'<img src="{img}" width="140" alt="{b["name"]}">')
         price = f' ¥{b["menuPrice"]:.1f}' if b.get("menuPrice") else ""
@@ -250,6 +275,26 @@ def basket_block(snap):
     return ("## 🧺 指数篮子\n\n<p align=\"center\">" + " ".join(cells) + "</p>\n\n<p align=\"center\">"
             + " ＋ ".join(names) + f" ＝ <b>¥{base['total']:.1f}</b>（{short_city(base['city'])}，到手价）</p>\n\n"
             "图片与价格均来自麦当劳官方 MCP 实时菜单。")
+
+
+def write_site_data(rows, series, snap):
+    """给网页 docs/index.html 用的数据, 每次渲染一起更新."""
+    out = {"series": [{"date": d, "total": v, "index": i}
+                      for (d, v), (_, i) in zip(rows, series)],
+           "snapshot": None}
+    if snap:
+        snap = json.loads(json.dumps(snap))
+        for c in snap["cities"]:
+            for b in c.get("basket", []):
+                img = local_image(b.get("productCode"), b.get("image"))
+                b["localImage"] = img[len("docs/"):] if img else None
+            combo = c.get("combo") or {}
+            if combo:
+                img = local_image(combo.get("productCode"), combo.get("image"))
+                combo["localImage"] = img[len("docs/"):] if img else None
+        out["snapshot"] = snap
+    with open(os.path.join(DOCS, "data.json"), "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, indent=1)
 
 
 def main():
@@ -264,6 +309,7 @@ def main():
     if snap:
         svg_cities(snap, os.path.join(ASSETS, "cities.svg"))
     svg_banner(series, snap, os.path.join(ASSETS, "banner.svg"))
+    write_site_data(rows, series, snap)
     print("图表已生成")
 
     path = os.path.join(ROOT, "README.md")

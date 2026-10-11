@@ -9,6 +9,8 @@
 ![依赖](https://img.shields.io/badge/依赖-纯标准库-1a9e54)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
+**🌐 在线看板：https://ttnan.github.io/mcd-bigmac-index/** （打开即看城市价格榜、套餐省多少、逐项明细，每天自动更新）
+
 参赛作品：麦当劳程序员创意开发大赛（基于麦当劳官方 MCP Server）。
 
 ## 🔎 首日发现（2026-10-11）
@@ -56,7 +58,7 @@
 <!-- BASKET-START -->
 ## 🧺 指数篮子
 
-<p align="center"><img src="https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png" width="140" alt="巨无霸"> <img src="https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png" width="140" alt="薯条"> <img src="https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif" width="140" alt="可乐"></p>
+<p align="center"><img src="docs/items/1100.png" width="140" alt="巨无霸"> <img src="docs/items/4810.png" width="140" alt="薯条"> <img src="docs/items/9900008751.gif" width="140" alt="可乐"></p>
 
 <p align="center">巨无霸 ¥25.5 ＋ 薯条 ¥13.5 ＋ 可乐 ¥9.5 ＝ <b>¥48.5</b>（上海，到手价）</p>
 
