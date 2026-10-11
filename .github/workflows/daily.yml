@@ -2,8 +2,8 @@ name: 每日指数采集
 
 on:
   schedule:
-    # 每天北京时间 09:00 (UTC 01:00)
-    - cron: "0 1 * * *"
+    # 每天北京时间 11:00 (UTC 03:00) —— 午餐时段, 巨无霸在售
+    - cron: "0 3 * * *"
   workflow_dispatch:
 
 jobs:
