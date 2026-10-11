@@ -16,7 +16,7 @@
 >
 > 2026-10-11 麦当劳官方 MCP 实测 · 今天是第一天采样，之后每天自动更新。
 >
-> 👉 **[打开在线看板](https://ttnan.github.io/mcd-bigmac-index/)** · 觉得有意思就点个 ⭐ Star，数据每天自动更新。
+> 👉 **[打开在线看板，看看你所在的城市贵不贵](https://ttnan.github.io/mcd-bigmac-index/)** · 🟢 每天 11:00 自动更新 · 觉得有意思就点个 ⭐ Star
 <!-- HOOK-END -->
 
 参赛作品：麦当劳程序员创意开发大赛（基于麦当劳官方 MCP Server）。

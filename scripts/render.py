@@ -285,7 +285,7 @@ def hook_block(snap, prev):
                 f"城市间最多差 {gap_pct(snap):.1f}%。\n>\n")
     return (head +
             f"> {snap['date']} 麦当劳官方 MCP 实测 · {delta}\n>\n"
-            "> 👉 **[打开在线看板](https://ttnan.github.io/mcd-bigmac-index/)** · 觉得有意思就点个 ⭐ Star，数据每天自动更新。")
+            "> 👉 **[打开在线看板，看看你所在的城市贵不贵](https://ttnan.github.io/mcd-bigmac-index/)** · 🟢 每天 11:00 自动更新 · 觉得有意思就点个 ⭐ Star")
 
 
 def index_block(series, snap):

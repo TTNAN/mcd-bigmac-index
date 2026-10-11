@@ -16,6 +16,9 @@ header.hero{background:linear-gradient(135deg,var(--red),var(--deep));color:#fff
 .arches{position:absolute;right:-30px;bottom:-12px;width:min(440px,60vw);opacity:.22;animation:rise 1.2s ease both}
 @keyframes rise{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:.22}}
 @keyframes up{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.live{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:rgba(0,0,0,.18);border-radius:999px;padding:5px 14px;font-size:14px;font-weight:700}
+.pulse{width:9px;height:9px;border-radius:50%;background:#7CFC9A;box-shadow:0 0 0 0 rgba(124,252,154,.7);animation:pulse 1.8s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(124,252,154,0)}100%{box-shadow:0 0 0 0 rgba(124,252,154,0)}}
 .kicker{color:var(--yellow);letter-spacing:.3em;font-size:13px;font-weight:700}
 h1{font-size:clamp(30px,5.6vw,58px);line-height:1.12;margin:12px 0 14px;animation:up .6s ease both}
 h1 em{font-style:normal;color:var(--yellow)}
@@ -95,6 +98,7 @@ footer a{color:var(--yellow)}
 <header class="hero"><div class="wrap">
   <svg class="arches" viewBox="0 0 200 120" aria-hidden="true"><path d="M10 118 C10 10 50 10 60 60 C70 10 110 10 110 118" fill="none" stroke="#ffbc0d" stroke-width="18" stroke-linecap="round" transform="translate(40 0)"/></svg>
   <div class="kicker">MCD BIG MAC INDEX · 麦门通胀观测站</div>
+  <div class="live" id="live"><span class="pulse"></span>每天 11:00 自动更新</div>
   <h1 id="headline">同一份巨无霸，<br>每家店<em>一个价</em></h1>
   <p class="lead" id="lead">每天 11:00，通过麦当劳官方 MCP 在 10 座城市核心商圈各取 3 家门店，用官方核价拿到「巨无霸 + 中薯条 + 中可乐」的真实到手价。</p>
   <div class="ctas">
@@ -190,6 +194,7 @@ fetch('data.json?t=' + Date.now()).then(r => r.json()).then(render).catch(() => 
 
 function render(d) {
   DATA = d;
+  if (d.snapshot) document.getElementById('live').innerHTML = `<span class="pulse"></span>每天 11:00 自动更新 · 最近更新 ${d.snapshot.date} · 已连续记录 ${Math.max((d.series || []).length, (d.gapHistory || []).length, 1)} 天`;
   const snap = d.snapshot, series = d.series || [];
   if (!snap || !snap.cities.length) return;
   const cities = [...snap.cities].sort((a, b) => b.total - a.total);
@@ -264,7 +269,7 @@ function render(d) {
     ['和上次比', !prev ? '今天是第一天采样，之后每天自动对比涨跌。' : (changes.length ? changes.map(x => `${x.c}${x.n > x.o ? '涨' : '降'} ¥${Math.abs(x.n - x.o).toFixed(1)}`).join('，') + '。' : `和 ${prev.date} 相比，${cities.length} 座城市价格都没变。`)],
   ];
   document.getElementById('finds').innerHTML = finds.map(([t, s]) => `<div class="find"><b>${esc(t)}</b>${esc(s)}</div>`).join('');
-  SHARE_TEXT = `🍔 巨无霸指数 ${snap.date}\n同一份巨无霸三件套（巨无霸+中薯+中可乐），${allStores.length} 家门店里最贵 ${y(sHi.total)}、最便宜 ${y(sLo.total)}，差 ${sGap.toFixed(1)}%。\n城市中位数：${short(hi.city)} ${y(max)} 最贵，${loNames} ${y(min)} 最便宜。\n点套餐最多省 ${Math.max(...savings)}%。\n数据来自麦当劳官方 MCP，每天自动更新 👉 ${PAGE}`;
+  SHARE_TEXT = `🍔 同一份三件套，你所在的城市贵吗？\n巨无霸指数 ${snap.date}\n同一份巨无霸三件套（巨无霸+中薯+中可乐），${allStores.length} 家门店里最贵 ${y(sHi.total)}、最便宜 ${y(sLo.total)}，差 ${sGap.toFixed(1)}%。\n城市中位数：${short(hi.city)} ${y(max)} 最贵，${loNames} ${y(min)} 最便宜。\n点套餐最多省 ${Math.max(...savings)}%。\n数据来自麦当劳官方 MCP，每天自动更新 👉 ${PAGE}`;
 
   // basket
   document.getElementById('basket-sub').textContent = `${short(sh.city)}中位数价格 · 官方核价到手价`;
@@ -337,7 +342,8 @@ document.getElementById('mkimg').addEventListener('click', () => {
   const snap = DATA.snapshot, cities = [...snap.cities].sort((a, b) => b.total - a.total);
   const allStores = cities.flatMap(c => c.stores || [{total: c.total}]);
   const sHi = Math.max(...allStores.map(s => s.total)), sLo = Math.min(...allStores.map(s => s.total));
-  const W = 900, H = 1240, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const shown = cities.slice(0, 15);
+  const W = 900, H = 520 + shown.length * 62 + 230, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const g = cv.getContext('2d'), F = '"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif';
   const grd = g.createLinearGradient(0, 0, W, 360); grd.addColorStop(0, '#da291c'); grd.addColorStop(1, '#a51d13');
   g.fillStyle = '#fff8ec'; g.fillRect(0, 0, W, H);
@@ -353,7 +359,7 @@ document.getElementById('mkimg').addEventListener('click', () => {
   g.fillText(`${allStores.length} 家门店实测：最便宜 ${y(sLo)}，最贵 ${y(sHi)}`, 56, 300);
   g.fillStyle = '#1d1d1f'; g.font = `bold 30px ${F}`; g.fillText('城市中位数价格榜', 56, 430);
   const mn = cities[cities.length - 1].total, mx = cities[0].total, fl = Math.max(0, mn - (mx - mn) * 1.5 - 2);
-  cities.forEach((c, i) => {
+  shown.forEach((c, i) => {
     const yy = 470 + i * 62;
     g.fillStyle = '#1d1d1f'; g.font = `bold 26px ${F}`; g.fillText(short(c.city), 56, yy + 30);
     g.fillStyle = '#f2e6d0'; g.fillRect(150, yy + 6, 560, 34);
@@ -361,9 +367,12 @@ document.getElementById('mkimg').addEventListener('click', () => {
     g.fillRect(150, yy + 6, 560 * (0.12 + 0.88 * (c.total - fl) / (mx - fl)), 34);
     g.fillStyle = '#1d1d1f'; g.font = `bold 26px ${F}`; g.fillText(y(c.total), 728, yy + 33);
   });
+  const fy = 470 + shown.length * 62 + 40;
+  g.fillStyle = '#ffbc0d'; g.fillRect(56, fy, W - 112, 64);
+  g.fillStyle = '#1d1d1f'; g.font = `900 30px ${F}`; g.fillText('同一份三件套，你所在的城市贵吗？', 80, fy + 43);
   g.fillStyle = '#6e6e73'; g.font = `20px ${F}`;
-  g.fillText('巨无霸 + 中薯条 + 中可乐 · 麦当劳官方 MCP 核价到手价 · 核心商圈 3 店中位数', 56, 1130);
-  g.fillStyle = '#da291c'; g.font = `bold 22px ${F}`; g.fillText(PAGE.replace('https://', ''), 56, 1176);
+  g.fillText('巨无霸 + 中薯条 + 中可乐 · 麦当劳官方 MCP 核价 · 核心商圈 3 店中位数', 56, fy + 110);
+  g.fillStyle = '#da291c'; g.font = `bold 22px ${F}`; g.fillText('每天自动更新 👉 ' + PAGE.replace('https://', ''), 56, fy + 150);
   const img = document.getElementById('shareimg'); img.src = cv.toDataURL('image/png'); img.style.display = 'block';
   const a = document.createElement('a'); a.href = img.src; a.download = `巨无霸指数-${snap.date}.png`; a.click();
   toast('分享图已生成，手机上可长按保存');
