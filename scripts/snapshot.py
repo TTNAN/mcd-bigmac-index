@@ -5,6 +5,9 @@
 追加写入 data/prices.jsonl. Token 只从环境变量 MCD_MCP_TOKEN 读取,
 绝不落盘、不进仓库.
 
+调用链 (到店自取口径, beType=1/orderType=1):
+    query-nearby-stores -> query-meals -> calculate-price
+
 用法:
     MCD_MCP_TOKEN=xxx python scripts/snapshot.py
 """
@@ -17,8 +20,9 @@ import urllib.request
 
 MCP_URL = os.environ.get("MCD_MCP_URL", "https://mcp.mcd.cn")
 TOKEN = os.environ.get("MCD_MCP_TOKEN", "")
-# 采样地址: 用来定位一家固定门店, 可按需更换
-ADDRESS = os.environ.get("MCD_ADDRESS", "上海市黄浦区南京东路353号")
+# 采样门店定位 (到店自取)
+CITY = os.environ.get("MCD_CITY", "上海市")
+KEYWORD = os.environ.get("MCD_KEYWORD", "南京东路")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -30,6 +34,8 @@ BASKET = [
     ("薯条", ("套餐",), "中"),
     ("可乐", ("套餐", "雪碧", "美年达"), "中"),
 ]
+
+ORDER_CTX = {"orderType": 1, "beType": 1}  # 到店自取
 
 
 def rpc(method, params=None, session=None, timeout=30):
@@ -48,7 +54,6 @@ def rpc(method, params=None, session=None, timeout=30):
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         raw = resp.read().decode("utf-8", "replace")
         new_session = resp.headers.get("Mcp-Session-Id") or session
-    # 尝试纯 JSON, 否则按 SSE 解析
     try:
         return json.loads(raw), new_session
     except json.JSONDecodeError:
@@ -62,57 +67,43 @@ def rpc(method, params=None, session=None, timeout=30):
     raise RuntimeError(f"无法解析 MCP 返回: {raw[:200]}")
 
 
+def extract_payload(result):
+    """从 tools/call 结果里抠出业务 JSON.
+
+    麦当劳 MCP 的 content[0].text 是"说明文字 + JSON"混排,
+    JSON 部分形如 {"success":true,...,"data":...}.
+    """
+    if isinstance(result, dict) and "structuredContent" in result:
+        return result["structuredContent"]
+    texts = []
+    if isinstance(result, dict):
+        for p in result.get("content", []):
+            if isinstance(p, dict) and p.get("type") == "text":
+                texts.append(p.get("text", ""))
+    text = "".join(texts)
+    for marker in ('{"success"', '{"code"'):
+        i = text.find(marker)
+        if i >= 0:
+            return json.loads(text[i:])
+    # 兜底: 整个 text 当 JSON 试一次
+    return json.loads(text)
+
+
 def call_tool(session, name, arguments):
     data, session = rpc("tools/call",
                         {"name": name, "arguments": arguments}, session)
     if "error" in data:
         raise RuntimeError(f"工具 {name} 报错: {data['error']}")
-    result = data.get("result", {})
-    # tools/call 的结构化内容一般在 structuredContent, 文本在 content[]
-    if isinstance(result, dict):
-        if "structuredContent" in result:
-            return result["structuredContent"], session
-        parts = result.get("content", [])
-        texts = [p.get("text", "") for p in parts
-                 if isinstance(p, dict) and p.get("type") == "text"]
-        if texts:
-            try:
-                return json.loads("".join(texts)), session
-            except json.JSONDecodeError:
-                return "".join(texts), session
-    return result, session
+    return extract_payload(data.get("result", {})), session
 
 
-def pick(d, *keys):
-    """从字典里按多个候选键名取值, 兼容字段命名差异."""
-    if not isinstance(d, dict):
-        return None
-    for k in keys:
-        if k in d and d[k] not in (None, ""):
-            return d[k]
-    # 大小写不敏感再试一次
-    low = {str(k).lower(): v for k, v in d.items()}
-    for k in keys:
-        if k.lower() in low:
-            return low[k.lower()]
-    return None
-
-
-def as_list(x):
-    if isinstance(x, list):
-        return x
-    if isinstance(x, dict):
-        for k in ("items", "list", "data", "stores", "meals", "products"):
-            if isinstance(x.get(k), list):
-                return x[k]
-    return []
-
-
-def match_product(items, keyword, excludes, spec_pref):
-    """在菜单里按关键词找最匹配的单品."""
+def match_product(meals, keyword, excludes, spec_pref):
+    """meals: {code: {name, currentPrice, ...}}, 按关键词找最匹配的单品."""
     cands = []
-    for it in items:
-        name = str(pick(it, "name", "productName", "title") or "")
+    for code, m in meals.items():
+        if not isinstance(m, dict):
+            continue
+        name = str(m.get("name") or "")
         if keyword not in name:
             continue
         if any(e in name for e in excludes):
@@ -122,11 +113,11 @@ def match_product(items, keyword, excludes, spec_pref):
             score += 10
         if "套餐" in name:
             score -= 5
-        cands.append((score, name, it))
+        cands.append((score, code, name, m))
     if not cands:
         return None
     cands.sort(key=lambda t: -t[0])
-    return cands[0][2]
+    return cands[0]
 
 
 def main():
@@ -135,97 +126,88 @@ def main():
         return 2
 
     # 1. 建连
-    data, session = rpc("initialize", {
+    _, session = rpc("initialize", {
         "protocolVersion": "2024-11-05",
         "capabilities": {},
         "clientInfo": {"name": "mcd-bigmac-index", "version": "0.1.0"},
     })
-    print(f"已连接 MCP, session={session[:12]}..." if session else "已连接 MCP")
-    # 按 MCP 规范补发 initialized 通知 (部分 Server 要求)
     try:
         rpc("notifications/initialized", {}, session)
     except Exception:
         pass
+    print("已连接 MCP")
 
-    # 2. 工具清单留档 (诊断用)
-    data, session = rpc("tools/list", {}, session)
-    result = data.get("result", {})
-    raw_tools = result.get("tools") if isinstance(result, dict) else None
-    tools = [t.get("name") for t in as_list(raw_tools)
-             if isinstance(t, dict)]
-    with open(os.path.join(DATA, "tool-schemas.json"), "w",
-              encoding="utf-8") as f:
-        json.dump(data.get("result", data), f, ensure_ascii=False, indent=2)
-    print(f"可用工具 {len(tools)} 个")
-
-    need = {"query-nearby-stores", "query-meals", "calculate-price"}
-    missing = need - set(tools)
-    if missing:
-        print(f"缺少关键工具: {missing}", file=sys.stderr)
-        return 3
-
-    # 3. 找一家固定门店
-    stores, session = call_tool(session, "query-nearby-stores",
-                               {"address": ADDRESS})
-    store_list = as_list(stores)
-    if not store_list:
-        print(f"附近没有门店, 原始返回: {json.dumps(stores, ensure_ascii=False)[:300]}",
-              file=sys.stderr)
+    # 2. 找一家固定门店 (取第一家在营业的)
+    stores, session = call_tool(session, "query-nearby-stores", {
+        "searchType": 2, "city": CITY, "keyword": KEYWORD, "beType": 1,
+    })
+    store_list = stores.get("data", []) if isinstance(stores, dict) else []
+    store = next((s for s in store_list if s.get("businessStatus")), None)
+    store = store or (store_list[0] if store_list else None)
+    if not store:
+        print("附近没有可用门店", file=sys.stderr)
         return 4
-    store = store_list[0]
-    store_code = pick(store, "storeCode", "store_code", "code", "id")
-    be_code = pick(store, "beCode", "be_code")
-    store_name = pick(store, "name", "storeName", "title")
+    store_code = store["storeCode"]
+    store_name = store.get("storeName", "")
     print(f"采样门店: {store_name} ({store_code})")
 
-    # 4. 拉菜单, 匹配篮子单品
-    menu, session = call_tool(session, "query-meals",
-                              {"storeCode": store_code, "beCode": be_code})
-    items = as_list(menu)
+    # 3. 拉菜单, 匹配篮子单品
+    menu, session = call_tool(
+        session, "query-meals", {"storeCode": store_code, **ORDER_CTX})
+    meals = menu.get("data", {}).get("meals", {}) if isinstance(menu, dict) else {}
+    if not isinstance(meals, dict) or not meals:
+        print("菜单为空或结构异常", file=sys.stderr)
+        return 5
     with open(os.path.join(DATA, "menu-latest.json"), "w",
               encoding="utf-8") as f:
         json.dump(menu, f, ensure_ascii=False, indent=2)
+
     basket = []
     for keyword, excludes, spec in BASKET:
-        prod = match_product(items, keyword, excludes, spec)
-        if not prod:
-            print(f"菜单中未找到 [{keyword}], 跳过今日.", file=sys.stderr)
+        hit = match_product(meals, keyword, excludes, spec)
+        if not hit:
+            print(f"菜单中未找到 [{keyword}] (可能当前时段未售), 跳过今日.",
+                  file=sys.stderr)
             return 5
-        code = pick(prod, "productCode", "product_code", "code", "id")
-        name = pick(prod, "name", "productName", "title")
+        _, code, name, _ = hit
         basket.append({"productCode": code, "quantity": 1, "name": name})
         print(f"篮子成分: {name} ({code})")
 
-    # 5. 算到手总价
-    price_args = {"storeCode": store_code, "beCode": be_code,
-                  "items": [{"productCode": b["productCode"],
-                             "quantity": b["quantity"]} for b in basket]}
-    # 配送地址缺失时用门店自取口径; 若接口要求 addressId 再补
-    total_info, session = call_tool(session, "calculate-price", price_args)
-    total = pick(total_info, "totalAmount", "total", "payAmount",
-                 "actualAmount", "amount")
-    if total is None and isinstance(total_info, dict):
-        # 兜底: 在返回里找看起来像金额的数字字段
-        for k, v in total_info.items():
-            if isinstance(v, (int, float)) and "amount" in k.lower():
-                total = v
-                break
-    try:
-        total = float(total)
-    except (TypeError, ValueError):
-        total = None
-    print(f"篮子总价: {total}")
-
-    # 6. 落盘
-    today = datetime.date.today().isoformat()
-    record = {
-        "date": today,
-        "store": store_name,
+    # 4. 算到手总价
+    total_info, session = call_tool(session, "calculate-price", {
         "storeCode": store_code,
-        "basket": basket,
-        "total": total,
-        "raw": total_info if isinstance(total_info, dict) else str(total_info),
-    }
+        **ORDER_CTX,
+        "items": [{"productCode": b["productCode"], "quantity": 1}
+                  for b in basket],
+    })
+    data = total_info.get("data", total_info) if isinstance(total_info, dict) \
+        else {}
+    total = None
+    if isinstance(data, dict):
+        for k in ("totalAmount", "total", "payAmount", "actualAmount",
+                  "amount", "realPayAmount", "price", "totalPrice"):
+            if isinstance(data.get(k), (int, float)):
+                total = float(data[k])
+                break
+        if total is None:
+            for k, v in data.items():
+                if isinstance(v, (int, float)) and "amount" in k.lower():
+                    total = float(v)
+                    break
+    # MCP 金额单位为分, 折算成元
+    if total is not None and total > 200:
+        total = round(total / 100, 2)
+    print(f"篮子总价: {total} 元")
+    if total is None:
+        print(f"未能解析总价, 原始返回: "
+              f"{json.dumps(total_info, ensure_ascii=False)[:400]}",
+              file=sys.stderr)
+        return 6
+
+    # 5. 落盘
+    today = datetime.date.today().isoformat()
+    record = {"date": today, "store": store_name, "storeCode": store_code,
+              "basket": basket, "total": total}
     with open(os.path.join(DATA, "prices.jsonl"), "a",
               encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
