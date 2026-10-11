@@ -166,9 +166,9 @@ def main():
     for keyword, excludes, spec in BASKET:
         hit = match_product(meals, keyword, excludes, spec)
         if not hit:
-            print(f"菜单中未找到 [{keyword}] (可能当前时段未售), 跳过今日.",
-                  file=sys.stderr)
-            return 5
+            # 非正餐时段(如早餐)篮子单品可能不在售: 当天跳过, 不算失败
+            print(f"菜单中未找到 [{keyword}] (可能当前时段未售), 跳过今日.")
+            return 0
         _, code, name, _ = hit
         basket.append({"productCode": code, "quantity": 1, "name": name})
         print(f"篮子成分: {name} ({code})")
