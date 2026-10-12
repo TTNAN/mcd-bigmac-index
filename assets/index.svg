@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="320" viewBox="0 0 800 320" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','Source Han Sans SC',sans-serif">
 <rect width="800" height="320" rx="14" fill="#141414"/>
 <text x="56" y="30" font-size="16" fill="#ffbc0d" font-weight="bold">巨无霸指数走势（基期 = 100）</text>
-<text x="776" y="30" text-anchor="end" font-size="12" fill="#888">2026-10-11 → 2026-10-11</text>
-<line x1="56" y1="280.0" x2="776" y2="280.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="284.0" text-anchor="end" font-size="11" fill="#888">99.4</text><line x1="56" y1="222.0" x2="776" y2="222.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="226.0" text-anchor="end" font-size="11" fill="#888">99.7</text><line x1="56" y1="164.0" x2="776" y2="164.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="168.0" text-anchor="end" font-size="11" fill="#888">100.0</text><line x1="56" y1="106.0" x2="776" y2="106.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="110.0" text-anchor="end" font-size="11" fill="#888">100.3</text><line x1="56" y1="48.0" x2="776" y2="48.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="52.0" text-anchor="end" font-size="11" fill="#888">100.6</text>
-<circle cx="416.0" cy="164.0" r="5" fill="#e4002b"/>
-<text x="416.0" y="152.0" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">100.00</text>
-<text x="416.0" y="300" text-anchor="middle" font-size="11" fill="#888">10-11</text>
-<text x="776" y="312" text-anchor="end" font-size="11" fill="#777">首日为基期 = 100，曲线将每天自动延长 · 数据来自麦当劳官方 MCP</text>
+<text x="776" y="30" text-anchor="end" font-size="12" fill="#888">2026-10-11 → 2026-10-12</text>
+<line x1="56" y1="280.0" x2="776" y2="280.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="284.0" text-anchor="end" font-size="11" fill="#888">99.4</text><line x1="56" y1="222.0" x2="776" y2="222.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="226.0" text-anchor="end" font-size="11" fill="#888">99.7</text><line x1="56" y1="164.0" x2="776" y2="164.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="168.0" text-anchor="end" font-size="11" fill="#888">100.0</text><line x1="56" y1="106.0" x2="776" y2="106.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="110.0" text-anchor="end" font-size="11" fill="#888">100.3</text><line x1="56" y1="48.0" x2="776" y2="48.0" stroke="#2a2a2a" stroke-dasharray="4,4"/><text x="48" y="52.0" text-anchor="end" font-size="11" fill="#888">100.6</text><polygon points="56,280 56.0,164.0 776.0,164.0 776.0,280" fill="#e4002b" opacity="0.15"/><polyline points="56.0,164.0 776.0,164.0" fill="none" stroke="#e4002b" stroke-width="2.5"/>
+<circle cx="776.0" cy="164.0" r="5" fill="#e4002b"/>
+<text x="776.0" y="152.0" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">100.00</text>
+<text x="56.0" y="300" text-anchor="middle" font-size="11" fill="#888">10-11</text><text x="776.0" y="300" text-anchor="middle" font-size="11" fill="#888">10-12</text>
+<text x="776" y="312" text-anchor="end" font-size="11" fill="#777">较基期 ▲ 0.00 点 · 数据来自麦当劳官方 MCP</text>
 </svg>
