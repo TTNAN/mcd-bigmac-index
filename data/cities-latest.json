@@ -1,13 +1,13 @@
 {
-  "date": "2026-10-13",
+  "date": "2026-10-14",
   "cities": [
     {
       "city": "上海市",
       "keyword": "南京东路",
-      "store": "麦当劳上海黄浦悦荟广场餐厅",
-      "storeCode": "1450104",
-      "address": "南京东路３５３号（山东中路九江路）",
-      "hours": "06:30-23:59",
+      "store": "麦当劳上海黄浦恒基名人购物中心餐厅",
+      "storeCode": "1450449",
+      "address": "南京东路300号B2",
+      "hours": "08:00-22:00",
       "anchorTotal": 48.5,
       "total": 48.5,
       "basket": [
@@ -45,19 +45,6 @@
       },
       "stores": [
         {
-          "store": "麦当劳上海黄浦悦荟广场餐厅",
-          "storeCode": "1450104",
-          "address": "南京东路３５３号（山东中路九江路）",
-          "hours": "06:30-23:59",
-          "total": 48.5,
-          "comboPrice": 36.5,
-          "items": {
-            "巨无霸": 25.5,
-            "薯条": 13.5,
-            "可乐": 9.5
-          }
-        },
-        {
           "store": "麦当劳上海黄浦恒基名人购物中心餐厅",
           "storeCode": "1450449",
           "address": "南京东路300号B2",
@@ -82,17 +69,30 @@
             "薯条": 13.5,
             "可乐": 9.5
           }
+        },
+        {
+          "store": "麦当劳上海食品一店餐厅",
+          "storeCode": "1450056",
+          "address": "南京东路720号",
+          "hours": "06:30-23:00",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
         }
       ]
     },
     {
       "city": "北京市",
       "keyword": "王府井",
-      "store": "麦当劳北京新东安二号餐厅",
-      "storeCode": "1950526",
-      "address": "王府井大街138号新东安广场地下一层",
-      "hours": "08:00-22:00",
-      "anchorTotal": 50.5,
+      "store": "麦当劳北京王府井东街(澳门中心)餐厅",
+      "storeCode": "1950482",
+      "address": "王府井大街东街8号",
+      "hours": "07:00-22:00",
+      "anchorTotal": 50.0,
       "total": 50.0,
       "basket": [
         {
@@ -101,7 +101,7 @@
           "name": "巨无霸",
           "menuPrice": 26.0,
           "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
-          "anchorPrice": 26.5
+          "anchorPrice": 26.0
         },
         {
           "productCode": "4810",
@@ -125,27 +125,27 @@
         "name": "巨无霸三件套",
         "menuPrice": 37.0,
         "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
-        "anchorPrice": 37.5
+        "anchorPrice": 37.0
       },
       "stores": [
-        {
-          "store": "麦当劳北京新东安二号餐厅",
-          "storeCode": "1950526",
-          "address": "王府井大街138号新东安广场地下一层",
-          "hours": "08:00-22:00",
-          "total": 50.5,
-          "comboPrice": 37.5,
-          "items": {
-            "巨无霸": 26.5,
-            "薯条": 14.5,
-            "可乐": 9.5
-          }
-        },
         {
           "store": "麦当劳北京王府井东街(澳门中心)餐厅",
           "storeCode": "1950482",
           "address": "王府井大街东街8号",
           "hours": "07:00-22:00",
+          "total": 50.0,
+          "comboPrice": 37.0,
+          "items": {
+            "巨无霸": 26.0,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳北京灯市口餐厅",
+          "storeCode": "1950087",
+          "address": "灯市口大街33号",
+          "hours": "06:00-22:00",
           "total": 50.0,
           "comboPrice": 37.0,
           "items": {
@@ -478,10 +478,10 @@
           }
         },
         {
-          "store": "麦当劳成都锦江总府路茂业百货餐厅",
-          "storeCode": "3450339",
-          "address": "总府路1号茂业百货二层1号内部铺位号9F02001X商铺",
-          "hours": "00:00-23:59",
+          "store": "麦当劳成都第一城餐厅",
+          "storeCode": "3450069",
+          "address": "小科甲巷１号二层30、31号商铺（IFS）对面",
+          "hours": "07:00-23:59",
           "total": 50.5,
           "comboPrice": 37.5,
           "items": {
@@ -491,10 +491,10 @@
           }
         },
         {
-          "store": "麦当劳成都第一城餐厅",
-          "storeCode": "3450069",
-          "address": "小科甲巷１号二层30、31号商铺（IFS）对面",
-          "hours": "07:00-23:59",
+          "store": "麦当劳成都锦江总府路茂业百货餐厅",
+          "storeCode": "3450339",
+          "address": "总府路1号茂业百货二层1号内部铺位号9F02001X商铺",
+          "hours": "00:00-23:59",
           "total": 50.5,
           "comboPrice": 37.5,
           "items": {

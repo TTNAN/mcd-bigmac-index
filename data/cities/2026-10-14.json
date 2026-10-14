@@ -1,0 +1,845 @@
+{
+  "date": "2026-10-14",
+  "cities": [
+    {
+      "city": "上海市",
+      "keyword": "南京东路",
+      "store": "麦当劳上海黄浦恒基名人购物中心餐厅",
+      "storeCode": "1450449",
+      "address": "南京东路300号B2",
+      "hours": "08:00-22:00",
+      "anchorTotal": 48.5,
+      "total": 48.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 25.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 25.5
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 13.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 13.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 36.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 36.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳上海黄浦恒基名人购物中心餐厅",
+          "storeCode": "1450449",
+          "address": "南京东路300号B2",
+          "hours": "08:00-22:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳上海黄浦区福州路上海书城餐厅",
+          "storeCode": "1450556",
+          "address": "福州路465号",
+          "hours": "07:00-22:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳上海食品一店餐厅",
+          "storeCode": "1450056",
+          "address": "南京东路720号",
+          "hours": "06:30-23:00",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    },
+    {
+      "city": "北京市",
+      "keyword": "王府井",
+      "store": "麦当劳北京王府井东街(澳门中心)餐厅",
+      "storeCode": "1950482",
+      "address": "王府井大街东街8号",
+      "hours": "07:00-22:00",
+      "anchorTotal": 50.0,
+      "total": 50.0,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 26.0,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 26.0
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 14.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 14.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 37.0,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 37.0
+      },
+      "stores": [
+        {
+          "store": "麦当劳北京王府井东街(澳门中心)餐厅",
+          "storeCode": "1950482",
+          "address": "王府井大街东街8号",
+          "hours": "07:00-22:00",
+          "total": 50.0,
+          "comboPrice": 37.0,
+          "items": {
+            "巨无霸": 26.0,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳北京灯市口餐厅",
+          "storeCode": "1950087",
+          "address": "灯市口大街33号",
+          "hours": "06:00-22:00",
+          "total": 50.0,
+          "comboPrice": 37.0,
+          "items": {
+            "巨无霸": 26.0,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳北京东四南大街灯市口地铁餐厅",
+          "storeCode": "1950514",
+          "address": "东四南大街157号",
+          "hours": "07:00-22:00",
+          "total": 50.0,
+          "comboPrice": 37.0,
+          "items": {
+            "巨无霸": 26.0,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    },
+    {
+      "city": "广州市",
+      "keyword": "天河城",
+      "store": "麦当劳广州今日广场餐厅",
+      "storeCode": "1400011",
+      "address": "体育西路77号首层及二层",
+      "hours": "00:00-23:59",
+      "anchorTotal": 50.5,
+      "total": 50.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 26.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 26.5
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 14.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 14.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 37.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 37.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳广州今日广场餐厅",
+          "storeCode": "1400011",
+          "address": "体育西路77号首层及二层",
+          "hours": "00:00-23:59",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳广州维多利广场餐厅",
+          "storeCode": "1400401",
+          "address": "体育西路101号维多利广场首层及二层部分",
+          "hours": "07:00-23:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳广州正佳五楼餐厅",
+          "storeCode": "1400194",
+          "address": "天河路228号正佳广场五楼561铺",
+          "hours": "10:00-22:00",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    },
+    {
+      "city": "深圳市",
+      "keyword": "华强北",
+      "store": "麦当劳深圳华强北茂业餐厅",
+      "storeCode": "1421180",
+      "address": "华强北路与振兴路交汇处东方时代广场（以下简称“建筑物”）的一部分，具体为负101，即-1层B01019X号商铺",
+      "hours": "08:00-22:00",
+      "anchorTotal": 48.5,
+      "total": 48.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 25.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 25.5
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 13.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 13.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 36.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 36.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳深圳华强北茂业餐厅",
+          "storeCode": "1421180",
+          "address": "华强北路与振兴路交汇处东方时代广场（以下简称“建筑物”）的一部分，具体为负101，即-1层B01019X号商铺",
+          "hours": "08:00-22:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳深圳振中路餐厅",
+          "storeCode": "1420245",
+          "address": "华强北路华强广场1栋101建筑物的一部分",
+          "hours": "07:30-21:59",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳深圳中航城君尚餐厅",
+          "storeCode": "1420609",
+          "address": "华强北街道华航社区华富路1018号中航城君尚购物中心L116",
+          "hours": "07:30-22:30",
+          "total": 51.0,
+          "comboPrice": 41.0,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 10.0
+          }
+        }
+      ]
+    },
+    {
+      "city": "杭州市",
+      "keyword": "湖滨",
+      "store": "麦当劳杭州上城区延安路东坡宾馆餐厅",
+      "storeCode": "3330604",
+      "address": "延安路227号",
+      "hours": "07:00-23:00",
+      "anchorTotal": 48.5,
+      "total": 48.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 25.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 25.5
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 13.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 13.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 36.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 36.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳杭州上城区延安路东坡宾馆餐厅",
+          "storeCode": "3330604",
+          "address": "延安路227号",
+          "hours": "07:00-23:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳杭州上城区工联大厦餐厅",
+          "storeCode": "3330658",
+          "address": "学士路31号工联大厦201室",
+          "hours": "07:00-00:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳杭州涌金餐厅",
+          "storeCode": "3330010",
+          "address": "延安南路139号涌金广场一层",
+          "hours": "07:00-22:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    },
+    {
+      "city": "成都市",
+      "keyword": "春熙路",
+      "store": "麦当劳成都锦江区联升巷(京都大厦)餐厅",
+      "storeCode": "3450410",
+      "address": "大科甲巷43号1栋1楼1号（自编号L10号）及2楼1号（自编号L210号）",
+      "hours": "07:00-23:59",
+      "anchorTotal": 50.0,
+      "total": 50.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 26.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 26.0
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 14.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 14.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 37.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 37.0
+      },
+      "stores": [
+        {
+          "store": "麦当劳成都锦江区联升巷(京都大厦)餐厅",
+          "storeCode": "3450410",
+          "address": "大科甲巷43号1栋1楼1号（自编号L10号）及2楼1号（自编号L210号）",
+          "hours": "07:00-23:59",
+          "total": 50.0,
+          "comboPrice": 37.0,
+          "items": {
+            "巨无霸": 26.0,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳成都第一城餐厅",
+          "storeCode": "3450069",
+          "address": "小科甲巷１号二层30、31号商铺（IFS）对面",
+          "hours": "07:00-23:59",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳成都锦江总府路茂业百货餐厅",
+          "storeCode": "3450339",
+          "address": "总府路1号茂业百货二层1号内部铺位号9F02001X商铺",
+          "hours": "00:00-23:59",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    },
+    {
+      "city": "重庆市",
+      "keyword": "解放碑",
+      "store": "麦当劳重庆金鹰财富中心餐厅",
+      "storeCode": "3450149",
+      "address": "解放碑邹容路82号负一层",
+      "hours": "07:00-23:59",
+      "anchorTotal": 54.5,
+      "total": 51.0,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 26.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 29.0
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 14.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 14.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 10.0,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 11.0
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 41.0,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 54.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳重庆金鹰财富中心餐厅",
+          "storeCode": "3450149",
+          "address": "解放碑邹容路82号负一层",
+          "hours": "07:00-23:59",
+          "total": 54.5,
+          "comboPrice": 54.5,
+          "items": {
+            "巨无霸": 29.0,
+            "薯条": 14.5,
+            "可乐": 11.0
+          }
+        },
+        {
+          "store": "麦当劳重庆1089艺术美丽中心餐厅",
+          "storeCode": "3450146",
+          "address": "八一路53号负一层B01号、第一层103号",
+          "hours": "07:30-23:30",
+          "total": 51.0,
+          "comboPrice": 41.0,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 10.0
+          }
+        },
+        {
+          "store": "麦当劳重庆解放碑赛博城市餐厅",
+          "storeCode": "3450379",
+          "address": "解放碑街道民族路168号1层L1-2-1号",
+          "hours": "08:00-23:00",
+          "total": 51.0,
+          "comboPrice": 41.0,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 10.0
+          }
+        }
+      ]
+    },
+    {
+      "city": "武汉市",
+      "keyword": "江汉路",
+      "store": "麦当劳武汉HAPPY站台餐厅(江汉路地铁H出口)",
+      "storeCode": "1960008",
+      "address": "中山大道888号新佳丽广场负一楼happy站台",
+      "hours": "07:00-00:15",
+      "anchorTotal": 50.5,
+      "total": 50.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 26.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 26.5
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 14.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 14.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 37.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 37.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳武汉HAPPY站台餐厅(江汉路地铁H出口)",
+          "storeCode": "1960008",
+          "address": "中山大道888号新佳丽广场负一楼happy站台",
+          "hours": "07:00-00:15",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳武汉江汉路大汉口餐厅",
+          "storeCode": "1960138",
+          "address": "水塔街中山大道539号",
+          "hours": "00:00-23:59",
+          "total": 50.0,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.0,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳武汉宝利金餐厅",
+          "storeCode": "1960073",
+          "address": "花楼街198号宝利金国际广场二期四座一层１－２号，二层１－４、30-34号商铺",
+          "hours": "07:00-02:00",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    },
+    {
+      "city": "南京市",
+      "keyword": "新街口",
+      "store": "麦当劳南京新百餐厅",
+      "storeCode": "1990346",
+      "address": "中山南路1号A座负一层G-A-025号商铺",
+      "hours": "07:00-22:00",
+      "anchorTotal": 50.5,
+      "total": 48.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 25.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 26.5
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 13.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 14.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 36.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 37.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳南京新百餐厅",
+          "storeCode": "1990346",
+          "address": "中山南路1号A座负一层G-A-025号商铺",
+          "hours": "07:00-22:00",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳南京洪武餐厅",
+          "storeCode": "1990043",
+          "address": "洪武路119号",
+          "hours": "00:00-23:59",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳南京青奥城市客厅餐厅",
+          "storeCode": "1990762",
+          "address": "中山东路145号1F-18、19商铺",
+          "hours": "07:00-23:00",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    },
+    {
+      "city": "西安市",
+      "keyword": "钟楼",
+      "store": "麦当劳西安开元餐厅",
+      "storeCode": "1960622",
+      "address": "东大街解放市场6号首层",
+      "hours": "00:00-23:59",
+      "anchorTotal": 50.5,
+      "total": 50.5,
+      "basket": [
+        {
+          "productCode": "1100",
+          "quantity": 1,
+          "name": "巨无霸",
+          "menuPrice": 26.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260309/product/MS_1100_320.png",
+          "anchorPrice": 26.5
+        },
+        {
+          "productCode": "4810",
+          "quantity": 1,
+          "name": "薯条",
+          "menuPrice": 14.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/20250523/product/MS_G4810_320_1747877491921.png",
+          "anchorPrice": 14.5
+        },
+        {
+          "productCode": "9900008751",
+          "quantity": 1,
+          "name": "可乐",
+          "menuPrice": 9.5,
+          "image": "https://menu-img.mcd.cn/pcm/prod/menu/ProductPool/product/MS_9900008751_320.gif",
+          "anchorPrice": 9.5
+        }
+      ],
+      "combo": {
+        "productCode": "9900005466",
+        "name": "巨无霸三件套",
+        "menuPrice": 37.5,
+        "image": "https://menu-img.mcd.cn/pcm/prod/menu/20260824/product/MS_9900005466_320.png",
+        "anchorPrice": 37.5
+      },
+      "stores": [
+        {
+          "store": "麦当劳西安开元餐厅",
+          "storeCode": "1960622",
+          "address": "东大街解放市场6号首层",
+          "hours": "00:00-23:59",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳西安北大街餐厅",
+          "storeCode": "1960668",
+          "address": "北大街28号",
+          "hours": "07:00-23:00",
+          "total": 50.5,
+          "comboPrice": 37.5,
+          "items": {
+            "巨无霸": 26.5,
+            "薯条": 14.5,
+            "可乐": 9.5
+          }
+        },
+        {
+          "store": "麦当劳西安钟鼓楼餐厅",
+          "storeCode": "1960602",
+          "address": "西大街1号钟鼓楼广场",
+          "hours": "00:00-23:59",
+          "total": 48.5,
+          "comboPrice": 36.5,
+          "items": {
+            "巨无霸": 25.5,
+            "薯条": 13.5,
+            "可乐": 9.5
+          }
+        }
+      ]
+    }
+  ]
+}
