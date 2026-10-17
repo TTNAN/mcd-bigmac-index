@@ -1,11 +1,9 @@
+sha: bf2a2de470bca612a7a64b2eb71f2d11b9f21449
 name: 每日指数采集
 
 on:
-  schedule:
-    # 每天北京时间 11:00 (UTC 03:00) —— 午餐时段, 巨无霸在售
-    - cron: "0 3 * * *"
-    # 备份: 北京时间 13:00 再跑一次; 当天已采到数据会自动跳过, 防止 GitHub 定时任务偶发漏跑
-    - cron: "0 5 * * *"
+  # 定时采集已停用 (2026-10-17, 用户要求): 麦当劳标价一年调一两次, 每日跑纯属浪费。
+  # 需要时可在 Actions 页面手动触发 workflow_dispatch。
   workflow_dispatch:
     inputs:
       force:
@@ -64,3 +62,4 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: 每日指数更新 $(TZ=Asia/Shanghai date +%F)"
           git pull --rebase --autostash || true
           git push
+
